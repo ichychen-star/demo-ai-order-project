@@ -1,0 +1,59 @@
+# ─── Java / Maven ───────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ─── Node / pnpm ────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+.pnpm-store/
+.pnpm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Environment / Secrets ──────────────────────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+docker/.env
+docker/backend.env
+docker/frontend.env
+*.key
+*.pem
+*.p12
+*.jks
+
+# ─── IDE ────────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ─── Claude Code ────────────────────────────────────────────────
+.claude/
+
+# ─── OS ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── TypeScript build cache ─────────────────────────────────────
+*.tsbuildinfo
+
+# ─── Test / Coverage ────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── Docker volumes (if bind-mounted locally) ───────────────────
+docker/data/
