@@ -655,7 +655,7 @@ Create all DTO classes for the Order and AI APIs so subsequent controller and se
 
 ---
 
-### TASK-BE-005
+### TASK-BE-005 ✅
 
 **Title:** Entity-DTO Mapper
 
@@ -684,10 +684,16 @@ Create the mapper class that converts between JPA entities and DTOs, so service 
 - `backend/src/main/java/com/company/aivehicleorder/mapper/VehicleMapper.java`
 - `backend/src/main/java/com/company/aivehicleorder/mapper/VehicleOptionMapper.java`
 
+**Unit Tests:**
+- `backend/src/test/java/com/company/aivehicleorder/mapper/MapperTest.java`
+  (plain JUnit 5) — covers: toResponse scalar fields, vehicleName concatenation, nested options,
+  toEntity non-price fields, price fields not set by mapper, OrderOption snapshot creation,
+  VehicleMapper and VehicleOptionMapper field mapping
+
 **Acceptance Criteria:**
-- `mvn compile` succeeds
-- Unit test: `OrderMapper.toResponse(order)` maps all fields including nested `OrderOption` list
-- No business logic in mappers — only field assignment
+- `mvn compile` succeeds ✅
+- Unit test: `OrderMapper.toResponse(order)` maps all fields including nested `OrderOption` list ✅
+- No business logic in mappers — only field assignment ✅
 
 **Complexity:** S
 
