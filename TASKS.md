@@ -19,6 +19,7 @@ Each task targets **1–3 hours of implementation work** for a single layer or c
 - `Out of Scope` sections explicitly fence adjacent concerns, preventing the agent from over-implementing.
 - Tasks reference SPEC.md and ARCHITECTURE.md section numbers rather than restating full content, keeping prompts short.
 - Tasks avoid "implement the full feature" framing — they target one class, one migration file, or one component at a time.
+- Every task that produces application code includes a `Unit Tests` section (after `Suggested Files`), listing test file paths, annotations, and scenarios. DB/config/deployment tasks may set `Unit Tests: N/A`.
 
 ### Implementation Order Strategy
 
@@ -40,6 +41,38 @@ Within Phase 4, vertical slices are preferred: complete one order feature end-to
 - AI tasks depend on backend config and prompt files being in place.
 - Deployment tasks depend on all application code being complete and tested.
 - Tasks marked with `(parallel-safe)` can be implemented concurrently by separate agents without risk of conflict.
+
+### Testing Strategy
+
+Every task that produces application code **must** include a corresponding `Unit Tests` section specifying:
+- The test file path(s) to create
+- The test class name and framework annotations
+- The specific scenarios to cover
+
+**Test type by task category:**
+
+| Task Category | Required Test Type | Framework / Annotation |
+|---|---|---|
+| DB Migration (`TASK-DB-*`) | None — verified by Flyway apply in Acceptance Criteria | — |
+| Config / Bootstrap | None — verified by startup + curl checks | — |
+| JPA Entity + Repository | `@DataJpaTest` repository test | JUnit 5 + AssertJ |
+| Service layer | `@ExtendWith(MockitoExtension)` unit test | JUnit 5 + Mockito + AssertJ |
+| Controller layer | `@WebMvcTest` slice test | MockMvc + Mockito |
+| Mapper / Utility | Plain JUnit 5 (`@Test`) — no Spring context | JUnit 5 + AssertJ |
+| AI orchestration | `@ExtendWith(MockitoExtension)` with mocked `ChatClient` | JUnit 5 + Mockito |
+| Frontend (`TASK-FE-*`, `TASK-ORD-FE-*`) | Jest unit test or N/A | Jest + React Testing Library |
+| Deployment (`TASK-DEPLOY-*`) | None — verified by CI pipeline check | — |
+
+**Conventions (backend):**
+- Test files live in `backend/src/test/java/com/company/aivehicleorder/`
+- Mirror the main source package structure (e.g., `service/OrderServiceTest.java`)
+- Use `@ActiveProfiles("test")` for all Spring slice tests
+- Use `@AutoConfigureTestDatabase(replace = NONE)` with H2 config from `application-test.yml`
+- Never call Azure OpenAI in tests — mock `AiOrchestrationService`
+- Each test method name follows: `methodName_scenario_expectedOutcome`
+
+**When `Unit Tests: N/A` is acceptable:**
+- DB migrations, Bootstrap scaffolding, CORS/config setup, Deployment scripts
 
 ---
 
@@ -294,6 +327,8 @@ Create the `vehicles` table with all columns defined in SPEC.md §14.1 and the i
 **Suggested Files:**
 - `backend/src/main/resources/db/migration/V1__create_vehicles.sql`
 
+**Unit Tests:** N/A — verified by Flyway apply + `SHOW CREATE TABLE` / `SHOW INDEX` in Acceptance Criteria.
+
 **Acceptance Criteria:**
 - Flyway applies V1 cleanly on a fresh MySQL instance (`docker compose up mysql`)
 - `SHOW CREATE TABLE vehicles` matches the SPEC column list
@@ -323,6 +358,8 @@ Create the `vehicle_options` table as defined in SPEC.md §14.2.
 
 **Suggested Files:**
 - `backend/src/main/resources/db/migration/V2__create_vehicle_options.sql`
+
+**Unit Tests:** N/A — verified by Flyway apply + `SHOW CREATE TABLE` / `SHOW INDEX` in Acceptance Criteria.
 
 **Acceptance Criteria:**
 - Flyway applies V1+V2 cleanly
@@ -356,6 +393,8 @@ Create the `orders` table with all columns from SPEC.md §14.3 and all indexes f
 **Suggested Files:**
 - `backend/src/main/resources/db/migration/V3__create_orders.sql`
 
+**Unit Tests:** N/A — verified by Flyway apply + `SHOW CREATE TABLE` / `SHOW INDEX` in Acceptance Criteria.
+
 **Acceptance Criteria:**
 - Flyway applies V1+V2+V3 cleanly
 - All indexes exist: verify with `SHOW INDEX FROM orders`
@@ -386,6 +425,8 @@ Create the `order_options` join table with composite PK and FK constraints as de
 
 **Suggested Files:**
 - `backend/src/main/resources/db/migration/V4__create_order_options.sql`
+
+**Unit Tests:** N/A — verified by Flyway apply + `SHOW CREATE TABLE` / `SHOW INDEX` in Acceptance Criteria.
 
 **Acceptance Criteria:**
 - Flyway applies V1–V4 cleanly
@@ -418,6 +459,8 @@ Insert the vehicle and option seed data from SPEC.md §31 so the application has
 
 **Suggested Files:**
 - `backend/src/main/resources/db/migration/V5__seed_data.sql`
+
+**Unit Tests:** N/A — verified by Flyway apply + `SHOW CREATE TABLE` / `SHOW INDEX` in Acceptance Criteria.
 
 **Acceptance Criteria:**
 - Flyway applies V5 cleanly
@@ -456,6 +499,8 @@ Complete `application.yml` for local development and create `WebConfig.java` for
 - `backend/src/main/resources/application.yml`
 - `backend/src/main/resources/application-prod.yml`
 - `backend/src/main/java/com/company/aivehicleorder/config/WebConfig.java`
+
+**Unit Tests:** N/A — no pure business logic; correctness verified by curl preflight check in Acceptance Criteria.
 
 **Acceptance Criteria:**
 - `mvn spring-boot:run` starts successfully with local MySQL running
@@ -496,6 +541,12 @@ Create the `Vehicle` and `VehicleOption` JPA entities mapped to their tables, an
 - `backend/src/main/java/com/company/aivehicleorder/repository/VehicleRepository.java`
 - `backend/src/main/java/com/company/aivehicleorder/repository/VehicleOptionRepository.java`
 
+**Unit Tests:**
+- `backend/src/test/java/com/company/aivehicleorder/repository/VehicleRepositoryTest.java`
+  (`@DataJpaTest`) — covers: active filter, brand→model sort, field round-trip
+- `backend/src/test/java/com/company/aivehicleorder/repository/VehicleOptionRepositoryTest.java`
+  (`@DataJpaTest`) — covers: active filter, name sort, field round-trip
+
 **Acceptance Criteria:**
 - `mvn compile` succeeds
 - Spring context loads with both repositories registered
@@ -532,6 +583,11 @@ Create the `Order` and `OrderOption` JPA entities with all columns, relationship
 - `backend/src/main/java/com/company/aivehicleorder/entity/OrderOption.java`
 - `backend/src/main/java/com/company/aivehicleorder/repository/OrderRepository.java`
 - `backend/src/main/java/com/company/aivehicleorder/entity/OrderStatus.java`
+
+**Unit Tests:**
+- `backend/src/test/java/com/company/aivehicleorder/repository/OrderRepositoryTest.java`
+  (`@DataJpaTest`) — covers: soft-delete filter, status+name search, @PrePersist lifecycle,
+  OrderOption cascade save/delete
 
 **Acceptance Criteria:**
 - `mvn compile` succeeds
