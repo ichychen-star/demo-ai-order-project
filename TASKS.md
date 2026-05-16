@@ -599,7 +599,7 @@ Create the `Order` and `OrderOption` JPA entities with all columns, relationship
 
 ---
 
-### TASK-BE-004
+### TASK-BE-004 ✅
 
 **Title:** Request and Response DTOs
 
@@ -640,10 +640,16 @@ Create all DTO classes for the Order and AI APIs so subsequent controller and se
 - `backend/src/main/java/com/company/aivehicleorder/dto/response/PriceCalculationResponse.java`
 - `backend/src/main/java/com/company/aivehicleorder/dto/response/ApiErrorResponse.java`
 
+**Unit Tests:**
+- `backend/src/test/java/com/company/aivehicleorder/dto/DtoValidationTest.java`
+  (plain JUnit 5 + Hibernate Validator) — covers: CreateOrderRequest required-field violations,
+  optional fields, AiParseTextRequest size/blank constraints, CalculatePriceRequest null vehicleId,
+  AiParseResponse SPEC §17.2 field mapping, OrderResponse builder with vehicleName + nested options
+
 **Acceptance Criteria:**
-- `mvn compile` succeeds
-- All request DTOs have Bean Validation annotations on required fields matching SPEC.md §20
-- `AiParseResponse` fields exactly match SPEC.md §17.2 JSON structure
+- `mvn compile` succeeds ✅
+- All request DTOs have Bean Validation annotations on required fields matching SPEC.md §20 ✅
+- `AiParseResponse` fields exactly match SPEC.md §17.2 JSON structure ✅
 
 **Complexity:** M
 
