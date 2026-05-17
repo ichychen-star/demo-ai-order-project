@@ -1041,7 +1041,7 @@ Create the Next.js App Router page stubs for `/orders`, `/orders/new`, and `/ord
 
 ## Phase 4 — Core Order Features
 
-### TASK-ORD-001
+### TASK-ORD-001 ✅
 
 **Title:** PricingService — Pure Price Calculation
 
@@ -1077,7 +1077,7 @@ Implement the `PricingService` with the pricing formula from SPEC.md §15, as a 
 
 ---
 
-### TASK-ORD-002
+### TASK-ORD-002 ✅
 
 **Title:** OrderService — CRUD Operations
 
