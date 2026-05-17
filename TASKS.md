@@ -699,7 +699,7 @@ Create the mapper class that converts between JPA entities and DTOs, so service 
 
 ---
 
-### TASK-BE-006
+### TASK-BE-006 ✅
 
 **Title:** Global Exception Handler + Custom Exceptions
 
@@ -729,11 +729,17 @@ Create the `GlobalExceptionHandler` with `@RestControllerAdvice` to return consi
 - `backend/src/main/java/com/company/aivehicleorder/exception/AiParseException.java`
 - `backend/src/main/java/com/company/aivehicleorder/exception/EntityNotFoundException.java`
 
+**Unit Tests:**
+- `backend/src/test/java/com/company/aivehicleorder/exception/GlobalExceptionHandlerTest.java`
+  (plain JUnit 5, no Spring context — avoids Byte Buddy Java 26 limitation) — covers:
+  400 validation field errors list, 404 JSON response, 422 user-friendly message,
+  422 internal message not exposed, 413 status, 500 no stack trace, 500 internal details hidden
+
 **Acceptance Criteria:**
-- Unit test: POST to any endpoint with invalid body returns 400 with `errors` list
-- Unit test: throw `EntityNotFoundException` → response is 404 JSON (not HTML)
-- AI parse failure returns 422 with message `"AI 無法解析訂單內容，請手動調整。"` (from SPEC.md §21)
-- No Java stack trace in any response body
+- Unit test: POST to any endpoint with invalid body returns 400 with `errors` list ✅
+- Unit test: throw `EntityNotFoundException` → response is 404 JSON (not HTML) ✅
+- AI parse failure returns 422 with message `"AI 無法解析訂單內容，請手動調整。"` ✅
+- No Java stack trace in any response body ✅
 
 **Complexity:** S
 
