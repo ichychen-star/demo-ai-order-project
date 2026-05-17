@@ -1117,7 +1117,7 @@ Implement `OrderService` with create, read, update, and soft-delete operations, 
 
 ---
 
-### TASK-ORD-003
+### TASK-ORD-003 ✅
 
 **Title:** Order CRUD + Price Controller
 
@@ -1160,7 +1160,7 @@ Implement the thin `OrderController` and `VehicleController` REST controllers th
 
 ---
 
-### TASK-ORD-004
+### TASK-ORD-004 ✅
 
 **Title:** Order List Page — Search + Table UI
 
