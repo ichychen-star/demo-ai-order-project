@@ -1203,6 +1203,8 @@ Implement the `/orders` list page with keyword search, status filter, and the `O
 
 **Title:** Order Form — Base Fields + Vehicle/Color Selection
 
+**Status:** ✅ DONE (2026-05-17)
+
 **Goal:**
 Implement the order form base section: customer info fields, vehicle dropdown, exterior/interior color inputs, and delivery month picker.
 
@@ -1229,10 +1231,24 @@ Implement the order form base section: customer info fields, vehicle dropdown, e
 - `frontend/src/features/orders/useOrderForm.ts`
 
 **Acceptance Criteria:**
-- Vehicle dropdown populated with 5 seed vehicles
-- Required field validation shows inline error on submit attempt
-- Form values persist in Zustand store on change
-- `pnpm type-check` passes
+- [x] Vehicle dropdown populated with 5 seed vehicles
+- [x] Required field validation shows inline error on submit attempt
+- [x] Form values persist in Zustand store on change
+- [x] `pnpm type-check` passes
+
+**Completion Summary:**
+- Created `frontend/src/features/orders/useOrderForm.ts`: exports `orderFormSchema`, `OrderFormValues` type, `useOrderForm()` hook — fetches vehicles via `vehicleApi`, wires `zodResolver`, syncs all field changes to Zustand via `form.watch()` subscription (explicit per-field, no `any`).
+- Created `frontend/src/components/order/OrderForm.tsx`: stateless component accepting `defaultValues?` and `onSubmit?` props; three sections (客戶資訊 / 車款與顏色 / 交車與狀態); MUI `Controller` for `vehicleId` and `status` Selects; loading spinner in vehicle dropdown; inline `helperText` for all errors.
+- Updated `frontend/src/app/orders/new/page.tsx` stub → minimal `AppShell + OrderForm` render to enable UI validation (save button / status controls remain TASK-ORD-007 scope).
+- Installed `@hookform/resolvers@5.2.2` (was missing from package.json).
+
+**Issues Encountered:**
+- `@hookform/resolvers` not in `package.json` → installed via `pnpm add`.
+- Stale dev server processes on ports 3001/3002 held old build → killed PIDs, restarted fresh.
+
+**TODO / Tech Debt:**
+- `expectedDeliveryMonth` uses `type="month"` native input — MUI DatePicker would give better UX; deferred post-MVP.
+- `customerEmail` empty string sent as `''` to Zustand; TASK-ORD-007 should normalize to `undefined` before API call.
 
 **Complexity:** M
 
