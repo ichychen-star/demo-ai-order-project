@@ -21,12 +21,15 @@ export const orderFormSchema = z.object({
 
 export type OrderFormValues = z.infer<typeof orderFormSchema>;
 
-export function useOrderForm(defaultValues?: Partial<OrderFormValues>) {
+export function useOrderForm(
+  defaultValues?: Partial<OrderFormValues>,
+  initialOptionIds?: string[],
+) {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehiclesLoading, setVehiclesLoading] = useState(false);
   const [options, setOptions] = useState<VehicleOption[]>([]);
   const [optionsLoading, setOptionsLoading] = useState(false);
-  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
+  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>(initialOptionIds ?? []);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const setField = useOrderStore((s) => s.setField);

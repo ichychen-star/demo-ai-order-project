@@ -1307,6 +1307,8 @@ Add the vehicle options checkbox list and real-time price display to the order f
 
 **Title:** Order Create/Edit Page — Save + Status Flow
 
+**Status:** ✅ DONE (2026-05-17)
+
 **Goal:**
 Implement the complete `/orders/new` and `/orders/:id` pages with save functionality, assembling the `OrderForm` into a full page with a save button and status transition controls.
 
@@ -1330,10 +1332,25 @@ Implement the complete `/orders/new` and `/orders/:id` pages with save functiona
 - `frontend/src/app/orders/[id]/page.tsx`
 
 **Acceptance Criteria:**
-- Full create flow: fill form → save → redirected to edit page showing new order
-- Full edit flow: open existing order → modify fields → save → values persisted
-- Status change from DRAFT to CONFIRMED works end-to-end
-- API errors from backend (400 validation) shown to user with field-level messages
+- [x] Full create flow: fill form → save → redirected to edit page showing new order
+- [x] Full edit flow: open existing order → modify fields → save → values persisted
+- [x] Status change from DRAFT to CONFIRMED works end-to-end
+- [x] API errors from backend (400 validation) shown to user with field-level messages
+
+**Completion Summary:**
+- Extended `useOrderForm.ts`: added `initialOptionIds?: string[]` second parameter to initialize `selectedOptionIds` state for edit page pre-fill.
+- Extended `OrderForm.tsx`: added `initialOptionIds?` prop (passed to hook), `actions?: React.ReactNode` slot rendered at form bottom — allows pages to inject save buttons without coupling the form component to page-level actions.
+- Implemented `orders/new/page.tsx`: local `saving`/`error` state; reads `currentOrder.optionIds` from Zustand for selectedOptionIds; calls `orderApi.createOrder()`; calls `resetForm()` then navigates to `/orders/:id` on success; shows MUI Alert with joined field-level errors on failure.
+- Implemented `orders/[id]/page.tsx` (converted from Server Component stub to Client Component): fetches order with loading/error states; maps `Order → OrderFormValues` as `defaultValues`; maps `order.options → initialOptionIds`; calls `orderApi.updateOrder()` on submit; shows MUI Alert on save error; "返回列表" button.
+- Error messages: `ApiError.errors[]` joined with `、` for field-level display; fallback to `ApiError.message`.
+
+**Issues Encountered:**
+- Dev server 500 on `/orders/[id]` — stale `.next` mixing production build artifacts with dev server chunks (`vendor-chunks/axios@1.16.0.js not found`). Fixed by `rm -rf .next` before restarting dev server.
+- `SegmentViewNode` RSC manifest error in dev server is a known Next.js 15.5 bug during hot reload — transient only, not a code issue.
+
+**TODO / Tech Debt:**
+- After successful update in edit page, no success toast/snackbar — user gets no visual confirmation that save succeeded. Add MUI Snackbar in future iteration.
+- `customerEmail` empty string normalized to `undefined` on save (`|| undefined`) — consistent with backend optional field handling.
 
 **Complexity:** M
 

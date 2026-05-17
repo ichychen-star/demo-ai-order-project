@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Controller } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -22,10 +23,17 @@ const COLOR_OPTIONS = ['白', '黑', '藍', '棕', '灰', '紅', '銀'] as const
 
 interface OrderFormProps {
   defaultValues?: Partial<OrderFormValues>;
+  initialOptionIds?: string[];
   onSubmit?: (values: OrderFormValues) => void | Promise<void>;
+  actions?: React.ReactNode;
 }
 
-export default function OrderForm({ defaultValues, onSubmit }: OrderFormProps) {
+export default function OrderForm({
+  defaultValues,
+  initialOptionIds,
+  onSubmit,
+  actions,
+}: OrderFormProps) {
   const {
     form,
     vehicles,
@@ -35,7 +43,7 @@ export default function OrderForm({ defaultValues, onSubmit }: OrderFormProps) {
     selectedOptionIds,
     toggleOption,
     calculatedPrice,
-  } = useOrderForm(defaultValues);
+  } = useOrderForm(defaultValues, initialOptionIds);
 
   const {
     register,
@@ -257,6 +265,8 @@ export default function OrderForm({ defaultValues, onSubmit }: OrderFormProps) {
           )}
         />
       </Box>
+
+      {actions && <Box sx={{ mt: 4 }}>{actions}</Box>}
     </Box>
   );
 }
