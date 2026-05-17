@@ -745,7 +745,7 @@ Create the `GlobalExceptionHandler` with `@RestControllerAdvice` to return consi
 
 ---
 
-### TASK-BE-007
+### TASK-BE-007 ✅
 
 **Title:** Order Number Generator Utility
 
@@ -768,10 +768,15 @@ Create the `OrderNoGenerator` utility class that generates sequential, human-rea
 **Suggested Files:**
 - `backend/src/main/java/com/company/aivehicleorder/util/OrderNoGenerator.java`
 
+**Unit Tests:**
+- `backend/src/test/java/com/company/aivehicleorder/util/OrderNoGeneratorTest.java`
+  (plain JUnit 5) — covers: first order → 0001, sixth order → 0006, date YYYYMMDD format,
+  zero-padding, large count
+
 **Acceptance Criteria:**
-- Unit test: `generate(LocalDate.of(2026,5,14), 0)` → `"ORD-20260514-0001"`
-- Unit test: `generate(LocalDate.of(2026,5,14), 5)` → `"ORD-20260514-0006"`
-- No dependency on database within the utility class itself
+- Unit test: `generate(LocalDate.of(2026,5,14), 0)` → `"ORD-20260514-0001"` ✅
+- Unit test: `generate(LocalDate.of(2026,5,14), 5)` → `"ORD-20260514-0006"` ✅
+- No dependency on database within the utility class itself ✅
 
 **Complexity:** S
 
