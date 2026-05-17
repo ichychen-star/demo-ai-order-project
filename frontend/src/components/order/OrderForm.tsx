@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import { OrderStatus } from '@/types/order';
 import { useOrderForm, type OrderFormValues } from '@/features/orders/useOrderForm';
 
+const COLOR_OPTIONS = ['白', '黑', '藍', '棕', '灰', '紅', '銀'] as const;
+
 interface OrderFormProps {
   defaultValues?: Partial<OrderFormValues>;
   onSubmit?: (values: OrderFormValues) => void | Promise<void>;
@@ -107,19 +109,39 @@ export default function OrderForm({ defaultValues, onSubmit }: OrderFormProps) {
             </FormControl>
           )}
         />
-        <TextField
-          {...register('exteriorColor')}
-          label="外裝顏色"
-          required
-          error={!!errors.exteriorColor}
-          helperText={errors.exteriorColor?.message}
+        <Controller
+          name="exteriorColor"
+          control={control}
+          render={({ field }) => (
+            <FormControl required error={!!errors.exteriorColor}>
+              <InputLabel>外裝顏色</InputLabel>
+              <Select {...field} label="外裝顏色">
+                {COLOR_OPTIONS.map((color) => (
+                  <MenuItem key={color} value={color}>{color}</MenuItem>
+                ))}
+              </Select>
+              {errors.exteriorColor && (
+                <FormHelperText>{errors.exteriorColor.message}</FormHelperText>
+              )}
+            </FormControl>
+          )}
         />
-        <TextField
-          {...register('interiorColor')}
-          label="內裝顏色"
-          required
-          error={!!errors.interiorColor}
-          helperText={errors.interiorColor?.message}
+        <Controller
+          name="interiorColor"
+          control={control}
+          render={({ field }) => (
+            <FormControl required error={!!errors.interiorColor}>
+              <InputLabel>內裝顏色</InputLabel>
+              <Select {...field} label="內裝顏色">
+                {COLOR_OPTIONS.map((color) => (
+                  <MenuItem key={color} value={color}>{color}</MenuItem>
+                ))}
+              </Select>
+              {errors.interiorColor && (
+                <FormHelperText>{errors.interiorColor.message}</FormHelperText>
+              )}
+            </FormControl>
+          )}
         />
       </Box>
 
