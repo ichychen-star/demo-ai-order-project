@@ -1005,7 +1005,7 @@ Create the `OrderTable` MUI DataGrid (or MUI Table) component matching the Order
 
 ---
 
-### TASK-FE-006
+### TASK-FE-006 ✅
 
 **Title:** Route Stubs for Order Pages
 
