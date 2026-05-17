@@ -2,8 +2,12 @@
 
 import { Controller } from 'react-hook-form';
 import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,6 +16,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { OrderStatus } from '@/types/order';
 import { useOrderForm, type OrderFormValues } from '@/features/orders/useOrderForm';
+import { formatNtd } from '@/utils/formatPrice';
 
 const COLOR_OPTIONS = ['白', '黑', '藍', '棕', '灰', '紅', '銀'] as const;
 
@@ -21,7 +26,17 @@ interface OrderFormProps {
 }
 
 export default function OrderForm({ defaultValues, onSubmit }: OrderFormProps) {
-  const { form, vehicles, vehiclesLoading } = useOrderForm(defaultValues);
+  const {
+    form,
+    vehicles,
+    vehiclesLoading,
+    options,
+    optionsLoading,
+    selectedOptionIds,
+    toggleOption,
+    calculatedPrice,
+  } = useOrderForm(defaultValues);
+
   const {
     register,
     handleSubmit,
@@ -144,6 +159,68 @@ export default function OrderForm({ defaultValues, onSubmit }: OrderFormProps) {
           )}
         />
       </Box>
+
+      {/* 選配加購 */}
+      <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+        選配加購
+      </Typography>
+      <Box sx={{ mb: 4 }}>
+        {optionsLoading ? (
+          <CircularProgress size={24} />
+        ) : (
+          <FormGroup row>
+            {options.map((opt) => (
+              <FormControlLabel
+                key={opt.id}
+                control={
+                  <Checkbox
+                    checked={selectedOptionIds.includes(opt.id)}
+                    onChange={() => toggleOption(opt.id)}
+                  />
+                }
+                label={`${opt.name}（+${formatNtd(opt.price)}）`}
+                sx={{ width: { xs: '100%', sm: '50%' } }}
+              />
+            ))}
+          </FormGroup>
+        )}
+      </Box>
+
+      {/* 費用明細 */}
+      {calculatedPrice && (
+        <>
+          <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+            費用明細
+          </Typography>
+          <Box
+            sx={{
+              bgcolor: 'grey.50',
+              border: '1px solid',
+              borderColor: 'grey.200',
+              borderRadius: 1,
+              px: 3,
+              py: 2,
+              mb: 4,
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="body2" color="text.secondary">車款售價</Typography>
+              <Typography variant="body2">{formatNtd(calculatedPrice.vehicleBasePrice)}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="body2" color="text.secondary">選配合計</Typography>
+              <Typography variant="body2">{formatNtd(calculatedPrice.optionsTotalPrice)}</Typography>
+            </Box>
+            <Divider sx={{ my: 1 }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Typography variant="body1" fontWeight="bold">總金額</Typography>
+              <Typography variant="body1" fontWeight="bold" color="primary">
+                {formatNtd(calculatedPrice.totalPrice)}
+              </Typography>
+            </Box>
+          </Box>
+        </>
+      )}
 
       {/* 交車與狀態 */}
       <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>

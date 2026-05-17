@@ -1258,6 +1258,8 @@ Implement the order form base section: customer info fields, vehicle dropdown, e
 
 **Title:** Order Form — Options Selection + Real-Time Price Calculation
 
+**Status:** ✅ DONE (2026-05-17)
+
 **Goal:**
 Add the vehicle options checkbox list and real-time price display to the order form, triggering `POST /api/orders/calculate-price` on vehicle or option change.
 
@@ -1280,10 +1282,22 @@ Add the vehicle options checkbox list and real-time price display to the order f
 - `frontend/src/features/orders/useOrderForm.ts` (extend)
 
 **Acceptance Criteria:**
-- Selecting a vehicle triggers price recalculation and updates price display
-- Selecting/deselecting any option triggers recalculation
-- Price display shows three lines: base price, options total, total price
-- No recalculation fires while user is still typing (300ms debounce)
+- [x] Selecting a vehicle triggers price recalculation and updates price display
+- [x] Selecting/deselecting any option triggers recalculation
+- [x] Price display shows three lines: base price, options total, total price
+- [x] No recalculation fires while user is still typing (300ms debounce)
+
+**Completion Summary:**
+- Extended `useOrderForm.ts`: added `vehicleApi.listOptions()` fetch, `selectedOptionIds` state, `toggleOption` callback (memoized with `useCallback`), reactive `form.watch('vehicleId')`, debounced `calculatePrice` useEffect (300ms via `useRef<setTimeout>`), dedicated `optionIds` Zustand sync effect. Returns additionally: `options`, `optionsLoading`, `selectedOptionIds`, `toggleOption`, `calculatedPrice`.
+- Extended `OrderForm.tsx`: added 「選配加購」section (`FormGroup` + `Checkbox` + `FormControlLabel`), 「費用明細」section (conditionally rendered when `calculatedPrice` is set — base price / options total / total with Divider). Added imports: `Checkbox`, `FormControlLabel`, `FormGroup`, `Divider`, `formatNtd`.
+- Debounce implemented with `useRef<ReturnType<typeof setTimeout>>` — no new library added.
+- Price calculation errors silently swallowed (`catch(() => {})`) — non-blocking per CLAUDE.md pricing rules.
+
+**Issues Encountered:**
+- After `rm -rf .next && pnpm build`, dev server lost its dev artifacts causing 404 on static chunks. Fixed by restarting dev server.
+
+**TODO / Tech Debt:**
+- `selectedOptionIds` is local state separate from react-hook-form; TASK-AI-010 will need to pre-fill AI-parsed options — may need to expose a reset/setter from the hook.
 
 **Complexity:** M
 
