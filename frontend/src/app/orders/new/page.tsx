@@ -49,10 +49,13 @@ export default function NewOrderPage() {
 
   return (
     <AppShell>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Typography variant="h5" fontWeight="bold">
           建立訂單
         </Typography>
+        <Button variant="outlined" onClick={() => router.push('/orders')}>
+          返回列表
+        </Button>
       </Box>
 
       {error && (
