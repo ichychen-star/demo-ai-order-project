@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -23,7 +24,9 @@ export default function EditOrderPage() {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ open: boolean; severity: 'success' | 'error'; message: string }>({
+    open: false, severity: 'success', message: '',
+  });
 
   const currentOrder = useOrderStore((s) => s.currentOrder);
 
@@ -37,7 +40,6 @@ export default function EditOrderPage() {
 
   const handleSubmit = async (values: OrderFormValues) => {
     setSaving(true);
-    setSaveError(null);
     try {
       await orderApi.updateOrder(id, {
         customerName: values.customerName,
@@ -50,10 +52,11 @@ export default function EditOrderPage() {
         expectedDeliveryMonth: values.expectedDeliveryMonth,
         status: values.status,
       });
+      setToast({ open: true, severity: 'success', message: '儲存成功' });
     } catch (err) {
       const apiErr = err as ApiError;
       const msg = apiErr.errors?.length ? apiErr.errors.join('、') : apiErr.message;
-      setSaveError(msg || '儲存失敗，請稍後再試。');
+      setToast({ open: true, severity: 'error', message: msg || '儲存失敗，請稍後再試。' });
     } finally {
       setSaving(false);
     }
@@ -106,12 +109,6 @@ export default function EditOrderPage() {
         </Button>
       </Box>
 
-      {saveError && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setSaveError(null)}>
-          {saveError}
-        </Alert>
-      )}
-
       <OrderForm
         defaultValues={defaultValues}
         initialOptionIds={initialOptionIds}
@@ -127,6 +124,21 @@ export default function EditOrderPage() {
           </Button>
         }
       />
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity={toast.severity}
+          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </AppShell>
   );
 }
