@@ -107,7 +107,7 @@ export default function OrderForm({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr 1fr' },
           gap: 2,
           mb: 4,
         }}
@@ -116,7 +116,7 @@ export default function OrderForm({
           name="vehicleId"
           control={control}
           render={({ field }) => (
-            <FormControl required error={!!errors.vehicleId} sx={{ gridColumn: { sm: 'span 2' } }}>
+            <FormControl required error={!!errors.vehicleId}>
               <InputLabel>車款</InputLabel>
               <Select
                 {...field}
@@ -193,7 +193,7 @@ export default function OrderForm({
                   />
                 }
                 label={`${opt.name}（+${formatNtd(opt.price)}）`}
-                sx={{ width: { xs: '100%', sm: '50%' } }}
+                sx={{ width: { xs: '100%', sm: '33.33%' } }}
               />
             ))}
           </FormGroup>
