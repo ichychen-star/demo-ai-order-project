@@ -67,6 +67,9 @@ export default function Sidebar() {
           width,
           boxSizing: 'border-box',
           overflowX: 'hidden',
+          bgcolor: 'background.paper',
+          borderRight: '1px solid',
+          borderColor: 'divider',
         },
       }}
     >
