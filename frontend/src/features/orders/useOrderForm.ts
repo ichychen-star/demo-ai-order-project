@@ -10,7 +10,10 @@ import type { Vehicle, VehicleOption } from '@/types/vehicle';
 
 export const orderFormSchema = z.object({
   customerName: z.string().min(1, '客戶名稱為必填'),
-  customerPhone: z.string().min(1, '客戶電話為必填'),
+  customerPhone: z.string()
+    .min(1, '客戶電話為必填')
+    .max(10, '電話不能超過10碼')
+    .regex(/^\d+$/, '只能輸入數字'),
   customerEmail: z.string().email('請輸入正確的電子郵件格式').or(z.literal('')).optional(),
   vehicleId: z.string().min(1, '請選擇車款'),
   exteriorColor: z.string().min(1, '外裝顏色為必填'),

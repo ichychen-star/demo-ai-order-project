@@ -49,6 +49,7 @@ export default function OrderForm({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = form;
 
@@ -79,6 +80,11 @@ export default function OrderForm({
         />
         <TextField
           {...register('customerPhone')}
+          onChange={(e) => {
+            const digits = e.target.value.replace(/\D/g, '');
+            setValue('customerPhone', digits, { shouldValidate: true, shouldDirty: true });
+          }}
+          inputProps={{ inputMode: 'numeric', maxLength: 10 }}
           label="客戶電話"
           required
           error={!!errors.customerPhone}
