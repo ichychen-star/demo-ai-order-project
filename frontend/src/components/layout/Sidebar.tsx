@@ -1,5 +1,6 @@
 'use client';
 
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -73,9 +74,10 @@ export default function Sidebar() {
         },
       }}
     >
-      <Box sx={{ height: 56, display: 'flex', alignItems: 'center', px: collapsed ? 1.5 : 2 }}>
+      <Box sx={{ height: 64, display: 'flex', alignItems: 'center', px: collapsed ? 1.5 : 2, gap: 1 }}>
+        <DirectionsCarIcon sx={{ color: 'primary.main', fontSize: 22, flexShrink: 0 }} />
         {!collapsed && (
-          <Typography variant="subtitle1" fontWeight={600} noWrap>
+          <Typography variant="subtitle1" fontWeight={700} noWrap>
             AI Vehicle Order
           </Typography>
         )}
@@ -108,6 +110,20 @@ export default function Sidebar() {
           );
         })}
       </List>
+
+      <Box sx={{ mt: 'auto', p: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: 13, fontWeight: 700 }}>
+            AD
+          </Avatar>
+          {!collapsed && (
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="body2" fontWeight={600} lineHeight={1.2} noWrap>Admin</Typography>
+              <Typography variant="caption" color="text.secondary" noWrap display="block">admin@aivo.com</Typography>
+            </Box>
+          )}
+        </Box>
+      </Box>
     </Drawer>
   );
 }

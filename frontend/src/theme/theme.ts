@@ -8,7 +8,7 @@ const appleTheme = createTheme({
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#F5F5F7',
+      default: '#F9FAFB',
       paper:   '#FFFFFF',
     },
     divider: 'rgba(0, 0, 0, 0.08)',
@@ -56,9 +56,9 @@ const appleTheme = createTheme({
         root: {
           '& .MuiTableCell-head': {
             backgroundColor: '#F5F5F7',
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '0.75rem',
-            color: 'rgba(0, 0, 0, 0.50)',
+            color: 'rgba(0, 0, 0, 0.87)',
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
           },
