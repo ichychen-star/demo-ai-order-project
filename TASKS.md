@@ -1391,6 +1391,14 @@ Create the three prompt template plain-text files in `resources/prompts/` with s
 
 **Complexity:** M
 
+**Status:** ✅ DONE (2026-05-20)
+
+**Completion Summary:**
+- Created `parse-order-system.txt` (104 lines): JSON-only rules, full catalog (5 vehicles, 6 options), 3 few-shot examples, all AiParseResponse fields covered
+- Created `generate-summary-system.txt` (18 lines): Traditional Chinese paragraph, 3–5 sentences, covers all required order fields
+- Created `generate-email-system.txt` (40 lines): Traditional Chinese formal email, greeting format per SPEC §12B, detail block with all order fields
+- All acceptance criteria verified via grep checks
+
 ---
 
 ### TASK-AI-002
