@@ -6,6 +6,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import AppShell from '@/components/layout/AppShell';
 import OrderForm from '@/components/order/OrderForm';
@@ -17,15 +18,15 @@ import { useOrderStore } from '@/store/orderStore';
 export default function NewOrderPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ open: boolean; severity: 'success' | 'error'; message: string }>({
+    open: false, severity: 'success', message: '',
+  });
   const currentOrder = useOrderStore((s) => s.currentOrder);
-  const resetForm = useOrderStore((s) => s.resetForm);
 
   const handleSubmit = async (values: OrderFormValues) => {
     setSaving(true);
-    setError(null);
     try {
-      const order = await orderApi.createOrder({
+      await orderApi.createOrder({
         customerName: values.customerName,
         customerPhone: values.customerPhone,
         customerEmail: values.customerEmail || undefined,
@@ -36,12 +37,11 @@ export default function NewOrderPage() {
         expectedDeliveryMonth: values.expectedDeliveryMonth,
         status: values.status,
       });
-      resetForm();
-      router.push(`/orders/${order.id}`);
+      setToast({ open: true, severity: 'success', message: 'Order created successfully.' });
     } catch (err) {
       const apiErr = err as ApiError;
-      const msg = apiErr.errors?.length ? apiErr.errors.join('、') : apiErr.message;
-      setError(msg || '儲存失敗，請稍後再試。');
+      const msg = apiErr.errors?.length ? apiErr.errors.join(', ') : apiErr.message;
+      setToast({ open: true, severity: 'error', message: msg || 'Failed to save. Please try again.' });
     } finally {
       setSaving(false);
     }
@@ -51,18 +51,12 @@ export default function NewOrderPage() {
     <AppShell>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Typography variant="h5" fontWeight="bold">
-          建立訂單
+          Create Order
         </Typography>
         <Button variant="outlined" onClick={() => router.push('/orders')}>
-          返回列表
+          Back to List
         </Button>
       </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
 
       <OrderForm
         onSubmit={handleSubmit}
@@ -73,10 +67,26 @@ export default function NewOrderPage() {
             disabled={saving}
             startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
           >
-            {saving ? '儲存中...' : '儲存訂單'}
+            {saving ? 'Saving...' : 'Save Order'}
           </Button>
         }
       />
+
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity={toast.severity}
+          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </AppShell>
   );
 }

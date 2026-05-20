@@ -34,7 +34,7 @@ export default function EditOrderPage() {
     orderApi
       .getOrder(id)
       .then(setOrder)
-      .catch(() => setFetchError('無法載入訂單，請稍後再試。'))
+      .catch(() => setFetchError('Unable to load order. Please try again.'))
       .finally(() => setFetchLoading(false));
   }, [id]);
 
@@ -52,11 +52,11 @@ export default function EditOrderPage() {
         expectedDeliveryMonth: values.expectedDeliveryMonth,
         status: values.status,
       });
-      setToast({ open: true, severity: 'success', message: '儲存成功' });
+      setToast({ open: true, severity: 'success', message: 'Saved successfully.' });
     } catch (err) {
       const apiErr = err as ApiError;
-      const msg = apiErr.errors?.length ? apiErr.errors.join('、') : apiErr.message;
-      setToast({ open: true, severity: 'error', message: msg || '儲存失敗，請稍後再試。' });
+      const msg = apiErr.errors?.length ? apiErr.errors.join(', ') : apiErr.message;
+      setToast({ open: true, severity: 'error', message: msg || 'Failed to save. Please try again.' });
     } finally {
       setSaving(false);
     }
@@ -75,7 +75,7 @@ export default function EditOrderPage() {
   if (fetchError || !order) {
     return (
       <AppShell>
-        <Alert severity="error">{fetchError ?? '訂單不存在'}</Alert>
+        <Alert severity="error">{fetchError ?? 'Order not found.'}</Alert>
       </AppShell>
     );
   }
@@ -98,14 +98,14 @@ export default function EditOrderPage() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight="bold">
-            編輯訂單
+            Edit Order
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {order.orderNo}
           </Typography>
         </Box>
         <Button variant="outlined" onClick={() => router.push('/orders')}>
-          返回列表
+          Back to List
         </Button>
       </Box>
 
@@ -120,7 +120,7 @@ export default function EditOrderPage() {
             disabled={saving}
             startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
           >
-            {saving ? '儲存中...' : '儲存變更'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         }
       />

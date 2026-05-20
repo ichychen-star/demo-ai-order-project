@@ -24,10 +24,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { type Order, OrderStatus } from '@/types/order';
 import { formatNtd } from '@/utils/formatPrice';
 
-const STATUS_COLOR: Record<OrderStatus, 'default' | 'success' | 'error'> = {
-  [OrderStatus.DRAFT]:     'default',
-  [OrderStatus.CONFIRMED]: 'success',
-  [OrderStatus.CANCELLED]: 'error',
+const STATUS_SX: Record<OrderStatus, { bgcolor: string; color: string }> = {
+  [OrderStatus.DRAFT]:     { bgcolor: '#F3F4F6', color: '#4B5563' },
+  [OrderStatus.CONFIRMED]: { bgcolor: '#DCFCE7', color: '#15803D' },
+  [OrderStatus.CANCELLED]: { bgcolor: '#FEE2E2', color: '#DC2626' },
 };
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
@@ -124,8 +124,8 @@ export default function OrderTable({ orders, onEdit, onDelete }: OrderTableProps
                   <TableCell sx={cellSx}>
                     <Chip
                       label={STATUS_LABEL[order.status]}
-                      color={STATUS_COLOR[order.status]}
                       size="small"
+                      sx={{ fontWeight: 600, fontSize: '0.75rem', ...STATUS_SX[order.status] }}
                     />
                   </TableCell>
                   <TableCell sx={cellSx}>{order.expectedDeliveryMonth}</TableCell>
