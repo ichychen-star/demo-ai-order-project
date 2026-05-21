@@ -59,7 +59,7 @@ public class AiOrchestrationService {
         } catch (AiParseException e) {
             throw e;
         } catch (Exception e) {
-            log.error("AI parse-order request failed: {}", e.getClass().getSimpleName());
+            log.error("AI parse-order request failed: {} - {}", e.getClass().getSimpleName(), e.getMessage());
             throw new AiParseException(ERROR_MESSAGE, e);
         }
     }
