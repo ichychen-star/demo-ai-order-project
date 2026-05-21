@@ -1628,7 +1628,7 @@ Add `generateSummary()` and `generateEmail()` methods to `AiOrchestrationService
 
 ---
 
-### TASK-AI-008
+### TASK-AI-008 ✅ DONE
 
 **Title:** AiController — Generate Summary + Generate Email Endpoints
 

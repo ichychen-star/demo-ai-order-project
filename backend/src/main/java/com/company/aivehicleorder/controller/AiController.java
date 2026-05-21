@@ -1,8 +1,12 @@
 package com.company.aivehicleorder.controller;
 
 import com.company.aivehicleorder.ai.AiOrchestrationService;
+import com.company.aivehicleorder.dto.request.AiGenerateRequest;
 import com.company.aivehicleorder.dto.request.AiParseTextRequest;
+import com.company.aivehicleorder.dto.response.AiGenerateResponse;
 import com.company.aivehicleorder.dto.response.AiParseResponse;
+import com.company.aivehicleorder.dto.response.OrderResponse;
+import com.company.aivehicleorder.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,13 +20,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/ai")
-@Tag(name = "AI", description = "AI-powered order parsing endpoints")
+@Tag(name = "AI", description = "AI-powered order parsing and generation endpoints")
 public class AiController {
 
     private final AiOrchestrationService aiOrchestrationService;
+    private final OrderService orderService;
 
-    public AiController(AiOrchestrationService aiOrchestrationService) {
+    public AiController(AiOrchestrationService aiOrchestrationService, OrderService orderService) {
         this.aiOrchestrationService = aiOrchestrationService;
+        this.orderService = orderService;
     }
 
     @PostMapping("/parse-text")
@@ -35,5 +41,21 @@ public class AiController {
     @Operation(summary = "Parse order from PDF", description = "Extracts text from a PDF file and parses it into structured order fields using AI")
     public AiParseResponse parsePdf(@RequestParam("file") MultipartFile file) {
         return aiOrchestrationService.parseOrderFromPdf(file);
+    }
+
+    @PostMapping("/generate-summary")
+    @Operation(summary = "Generate order summary", description = "Generates a concise AI summary paragraph for an existing order and persists it")
+    public AiGenerateResponse generateSummary(@Valid @RequestBody AiGenerateRequest request) {
+        OrderResponse order = orderService.getOrder(request.getOrderId());
+        String summary = aiOrchestrationService.generateSummary(order);
+        return AiGenerateResponse.builder().summary(summary).build();
+    }
+
+    @PostMapping("/generate-email")
+    @Operation(summary = "Generate confirmation email", description = "Generates a Traditional Chinese confirmation email draft for an existing order and persists it")
+    public AiGenerateResponse generateEmail(@Valid @RequestBody AiGenerateRequest request) {
+        OrderResponse order = orderService.getOrder(request.getOrderId());
+        String email = aiOrchestrationService.generateEmail(order);
+        return AiGenerateResponse.builder().email(email).build();
     }
 }
