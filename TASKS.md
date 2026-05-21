@@ -1665,6 +1665,8 @@ Add `POST /api/ai/generate-summary` and `POST /api/ai/generate-email` endpoints 
 
 **Title:** AI Input Panel UI — Text Input + PDF Upload + Parse Button
 
+**Status:** ✅ DONE (2026-05-21)
+
 **Goal:**
 Create the `AiInputPanel` component that provides the two-mode AI parse UI (paste text / upload PDF) and the "AI 解析需求" button, matching SPEC.md §10 Step 1–3.
 
@@ -1692,11 +1694,16 @@ Create the `AiInputPanel` component that provides the two-mode AI parse UI (past
 - `frontend/src/features/orders/useAiParse.ts`
 
 **Acceptance Criteria:**
-- Text mode: entering text and clicking parse button calls `POST /api/ai/parse-text`
-- PDF mode: uploading valid PDF and clicking parse calls `POST /api/ai/parse-pdf` with `multipart/form-data`
-- PDF validation: files > 10MB show client-side error before upload
-- Loading state: button is disabled and shows spinner during API call
-- Error state: `AiParseException` response shown as MUI Alert
+- [x] Text mode: entering text and clicking parse button calls `POST /api/ai/parse-text`
+- [x] PDF mode: uploading valid PDF and clicking parse calls `POST /api/ai/parse-pdf` with `multipart/form-data`
+- [x] PDF validation: files > 10MB show client-side error before upload
+- [x] Loading state: button is disabled and shows spinner during API call
+- [x] Error state: `AiParseException` response shown as MUI Alert
+
+**Completion Summary:**
+- Created `frontend/src/features/orders/useAiParse.ts`: custom hook with `loading`/`error` state, `parseText(text)` and `parsePdf(file)` methods; on success calls `orderStore.setAiResult()`; on failure extracts `ApiError.message`; syncs `setIsAiParsing` to Zustand store.
+- Created `frontend/src/components/order/AiInputPanel.tsx`: MUI `Tabs` for mode toggle; text mode with `TextField` multiline, `maxLength=2000`, char count display; PDF mode with dashed drop-zone `Box` + hidden `<input type="file">`; client-side 10MB size check; "AI 解析需求" `Button` with `CircularProgress` spinner when loading; `Alert` for errors.
+- `pnpm type-check` passes with zero errors.
 
 **Complexity:** M
 
