@@ -9,6 +9,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import AppShell from '@/components/layout/AppShell';
+import AiEmailPanel from '@/components/ai/AiEmailPanel';
+import AiInputPanel from '@/components/order/AiInputPanel';
+import AiSummaryPanel from '@/components/ai/AiSummaryPanel';
 import OrderForm from '@/components/order/OrderForm';
 import type { OrderFormValues } from '@/features/orders/useOrderForm';
 import type { ApiError } from '@/services/apiClient';
@@ -58,6 +61,10 @@ export default function NewOrderPage() {
         </Button>
       </Box>
 
+      <Box sx={{ mb: 3 }}>
+        <AiInputPanel />
+      </Box>
+
       <OrderForm
         onSubmit={handleSubmit}
         actions={
@@ -71,6 +78,21 @@ export default function NewOrderPage() {
           </Button>
         }
       />
+
+      <Box
+        sx={{
+          mt: 4,
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+          gap: 3,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          pt: 3,
+        }}
+      >
+        <AiSummaryPanel />
+        <AiEmailPanel />
+      </Box>
 
       <Snackbar
         open={toast.open}
