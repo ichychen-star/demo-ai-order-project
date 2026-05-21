@@ -1761,6 +1761,8 @@ Wire the `AiParseResponse` from the store into `OrderForm` so AI-parsed values a
 
 **Title:** AI Summary Panel UI
 
+**Status:** ✅ DONE (2026-05-21)
+
 **Goal:**
 Implement the right-side AI Summary Panel from SPEC.md §12, including the order summary display and the "AI 產生摘要" / "AI 產生客戶確認信" buttons.
 
@@ -1785,11 +1787,18 @@ Implement the right-side AI Summary Panel from SPEC.md §12, including the order
 - `frontend/src/app/orders/[id]/page.tsx` (extend to include panels)
 
 **Acceptance Criteria:**
-- Order summary section shows live-updated order data as user fills form
-- "AI 產生摘要" button disabled on `/orders/new` (no saved order yet)
-- After saving order and clicking "AI 產生摘要" → API called → summary text displayed
-- "AI 產生客戶確認信" → email draft displayed in panel
-- Copy-to-clipboard button copies email text successfully
+- [x] Order summary section shows live-updated order data as user fills form
+- [x] "AI 產生摘要" button disabled when no orderId (no saved order)
+- [x] After saving order and clicking "AI 產生摘要" → API called → summary text displayed
+- [x] "AI 產生客戶確認信" → email draft displayed in panel
+- [x] Copy-to-clipboard button copies email text successfully
+- [x] `pnpm type-check` passes with zero errors
+
+**Completion Summary:**
+- Fixed `frontend/src/types/ai.ts`: changed `AiGenerateResponse` from `{ content: string }` to `{ summary?: string; email?: string }` to match backend `@JsonInclude(NON_NULL)` response.
+- Created `frontend/src/components/ai/AiSummaryPanel.tsx`: reads `currentOrder`+`calculatedPrice` from Zustand for live data display; "AI 產生摘要" button (disabled if no `orderId`); shows placeholder text when no orderId; displays `aiSummary` on success; error Alert on failure.
+- Created `frontend/src/components/ai/AiEmailPanel.tsx`: "AI 產生客戶確認信" button (disabled if no `orderId`); scrollable pre-formatted email display; copy-to-clipboard with "已複製！" confirmation; error Alert on failure.
+- Extended `frontend/src/app/orders/[id]/page.tsx`: imports `AiInputPanel`, `AiSummaryPanel`, `AiEmailPanel`; initializes store `aiSummary`/`aiEmail` when order loads (shows stored AI content on re-open); adds `AiInputPanel` above form; adds `AiSummaryPanel`+`AiEmailPanel` in responsive 2-column grid below form.
 
 **Complexity:** M
 

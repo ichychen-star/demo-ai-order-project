@@ -21,5 +21,6 @@ export interface AiGenerateRequest {
 }
 
 export interface AiGenerateResponse {
-  content: string;
+  summary?: string;
+  email?: string;
 }
