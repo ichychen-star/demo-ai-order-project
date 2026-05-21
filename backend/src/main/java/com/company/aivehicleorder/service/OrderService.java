@@ -149,4 +149,15 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional
+    public void updateAiContent(UUID orderId, String aiSummary, String aiEmail) {
+        Order order = orderRepository.findById(orderId)
+                .filter(o -> !o.isDeleted())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
+        if (aiSummary != null) order.setAiSummary(aiSummary);
+        if (aiEmail != null) order.setAiEmail(aiEmail);
+        orderRepository.save(order);
+        log.info("Updated AI content for order: {}", orderId);
+    }
+
 }

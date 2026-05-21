@@ -1591,7 +1591,7 @@ Implement `AiController` exposing `POST /api/ai/parse-text` and `POST /api/ai/pa
 
 ---
 
-### TASK-AI-007
+### TASK-AI-007 ✅ DONE
 
 **Title:** AiOrchestrationService — Generate Summary + Generate Email
 

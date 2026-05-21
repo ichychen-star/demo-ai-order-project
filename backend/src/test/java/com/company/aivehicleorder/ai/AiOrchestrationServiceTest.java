@@ -1,7 +1,9 @@
 package com.company.aivehicleorder.ai;
 
 import com.company.aivehicleorder.dto.response.AiParseResponse;
+import com.company.aivehicleorder.dto.response.OrderResponse;
 import com.company.aivehicleorder.exception.AiParseException;
+import com.company.aivehicleorder.service.OrderService;
 import com.company.aivehicleorder.service.PdfExtractService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,9 @@ import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,11 +46,14 @@ class AiOrchestrationServiceTest {
     @Mock
     PdfExtractService pdfExtractService;
 
+    @Mock
+    OrderService orderService;
+
     AiOrchestrationService service;
 
     @BeforeEach
     void setUp() {
-        service = new AiOrchestrationService(chatClient, promptTemplateLoader, aiResponseParser, pdfExtractService);
+        service = new AiOrchestrationService(chatClient, promptTemplateLoader, aiResponseParser, pdfExtractService, orderService);
         lenient().when(promptTemplateLoader.getTemplate("parse-order-system")).thenReturn("system prompt");
     }
 
@@ -133,6 +140,46 @@ class AiOrchestrationServiceTest {
         assertThatThrownBy(() -> service.parseOrderFromPdf(file))
                 .isInstanceOf(AiParseException.class)
                 .hasMessageContaining("PDF");
+    }
+
+    @Test
+    void generateSummary_returnsNonEmptyString_andUpdatesOrder() {
+        OrderResponse order = buildOrderResponse();
+        lenient().when(promptTemplateLoader.getTemplate("generate-summary-system")).thenReturn("summary system prompt");
+        ChatResponse chatResponse = buildChatResponse("王先生訂購了 BMW X3。");
+        when(chatClient.prompt().system(anyString()).user(anyString()).call().chatResponse())
+                .thenReturn(chatResponse);
+
+        String result = service.generateSummary(order);
+
+        assertThat(result).isNotBlank();
+        assertThat(result).isEqualTo("王先生訂購了 BMW X3。");
+    }
+
+    @Test
+    void generateEmail_returnsChineseText_andUpdatesOrder() {
+        OrderResponse order = buildOrderResponse();
+        lenient().when(promptTemplateLoader.getTemplate("generate-email-system")).thenReturn("email system prompt");
+        ChatResponse chatResponse = buildChatResponse("親愛的王先生您好：感謝您選擇本公司服務。");
+        when(chatClient.prompt().system(anyString()).user(anyString()).call().chatResponse())
+                .thenReturn(chatResponse);
+
+        String result = service.generateEmail(order);
+
+        assertThat(result).contains("親愛的王先生");
+    }
+
+    private OrderResponse buildOrderResponse() {
+        return OrderResponse.builder()
+                .id(UUID.randomUUID())
+                .customerName("王先生")
+                .vehicleName("BMW X3")
+                .exteriorColor("銀")
+                .interiorColor("黑")
+                .expectedDeliveryMonth("2026-06")
+                .totalPrice(new BigDecimal("2500000"))
+                .options(List.of())
+                .build();
     }
 
     private ChatResponse buildChatResponse(String content) {
