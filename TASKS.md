@@ -1554,7 +1554,7 @@ Add `parseOrderFromPdf()` to `AiOrchestrationService` that chains `PdfExtractSer
 
 ---
 
-### TASK-AI-006
+### TASK-AI-006 ✅ DONE
 
 **Title:** AiController — Parse Text + Parse PDF Endpoints
 
