@@ -76,6 +76,7 @@ export default function OrderForm({
         <TextField
           {...register('customerName')}
           label="客戶名稱"
+          InputLabelProps={{ shrink: true }}
           required
           error={!!errors.customerName}
           helperText={errors.customerName?.message}
@@ -89,6 +90,7 @@ export default function OrderForm({
           }}
           inputProps={{ inputMode: 'numeric', maxLength: 10 }}
           label="客戶電話"
+          InputLabelProps={{ shrink: true }}
           required
           error={!!errors.customerPhone}
           helperText={errors.customerPhone?.message}
@@ -98,6 +100,7 @@ export default function OrderForm({
           {...register('customerEmail')}
           label="客戶電子郵件"
           type="email"
+          InputLabelProps={{ shrink: true }}
           error={!!errors.customerEmail}
           helperText={errors.customerEmail?.message}
           sx={{ gridColumn: { sm: 'span 2' }, ...getHighlightSx('customerEmail', aiHighlightedFields) }}
