@@ -1521,7 +1521,7 @@ Implement `PdfExtractService` that receives a PDF `MultipartFile`, validates it,
 
 ---
 
-### TASK-AI-005
+### TASK-AI-005 ✅ DONE
 
 **Title:** AiOrchestrationService — Parse PDF
 

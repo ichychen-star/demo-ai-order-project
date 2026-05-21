@@ -2,6 +2,7 @@ package com.company.aivehicleorder.ai;
 
 import com.company.aivehicleorder.dto.response.AiParseResponse;
 import com.company.aivehicleorder.exception.AiParseException;
+import com.company.aivehicleorder.service.PdfExtractService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,12 +15,15 @@ import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,12 +39,15 @@ class AiOrchestrationServiceTest {
     @Mock
     AiResponseParser aiResponseParser;
 
+    @Mock
+    PdfExtractService pdfExtractService;
+
     AiOrchestrationService service;
 
     @BeforeEach
     void setUp() {
-        service = new AiOrchestrationService(chatClient, promptTemplateLoader, aiResponseParser);
-        when(promptTemplateLoader.getTemplate("parse-order-system")).thenReturn("system prompt");
+        service = new AiOrchestrationService(chatClient, promptTemplateLoader, aiResponseParser, pdfExtractService);
+        lenient().when(promptTemplateLoader.getTemplate("parse-order-system")).thenReturn("system prompt");
     }
 
     @Test
@@ -99,6 +106,33 @@ class AiOrchestrationServiceTest {
         assertThatThrownBy(() -> service.parseOrderFromText("some text"))
                 .isInstanceOf(AiParseException.class)
                 .hasMessageContaining("AI 無法解析訂單內容");
+    }
+
+    @Test
+    void parseOrderFromPdf_validPdf_returnsAiParseResponse() {
+        MockMultipartFile file = new MockMultipartFile("file", "order.pdf", "application/pdf", new byte[]{0x25, 0x50, 0x44, 0x46});
+        String extractedText = "Wang Order BMW X3 Silver 2026-06";
+        when(pdfExtractService.extract(any())).thenReturn(extractedText);
+
+        ChatResponse chatResponse = buildChatResponse("{}");
+        when(chatClient.prompt().system(anyString()).user(anyString()).call().chatResponse())
+                .thenReturn(chatResponse);
+        AiParseResponse expected = AiParseResponse.builder().customerName("Wang").confidence(0.9).build();
+        when(aiResponseParser.parseParseResponse("{}")).thenReturn(expected);
+
+        AiParseResponse result = service.parseOrderFromPdf(file);
+
+        assertThat(result.getCustomerName()).isEqualTo("Wang");
+    }
+
+    @Test
+    void parseOrderFromPdf_invalidPdf_propagatesAiParseException() {
+        MockMultipartFile file = new MockMultipartFile("file", "bad.pdf", "application/pdf", new byte[]{0x00});
+        when(pdfExtractService.extract(any())).thenThrow(new AiParseException("上傳的檔案不是有效的 PDF 格式。"));
+
+        assertThatThrownBy(() -> service.parseOrderFromPdf(file))
+                .isInstanceOf(AiParseException.class)
+                .hasMessageContaining("PDF");
     }
 
     private ChatResponse buildChatResponse(String content) {

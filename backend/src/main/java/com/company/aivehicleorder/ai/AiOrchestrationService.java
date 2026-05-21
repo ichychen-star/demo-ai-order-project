@@ -2,11 +2,13 @@ package com.company.aivehicleorder.ai;
 
 import com.company.aivehicleorder.dto.response.AiParseResponse;
 import com.company.aivehicleorder.exception.AiParseException;
+import com.company.aivehicleorder.service.PdfExtractService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class AiOrchestrationService {
@@ -18,13 +20,16 @@ public class AiOrchestrationService {
     private final ChatClient chatClient;
     private final PromptTemplateLoader promptTemplateLoader;
     private final AiResponseParser aiResponseParser;
+    private final PdfExtractService pdfExtractService;
 
     public AiOrchestrationService(ChatClient chatClient,
                                    PromptTemplateLoader promptTemplateLoader,
-                                   AiResponseParser aiResponseParser) {
+                                   AiResponseParser aiResponseParser,
+                                   PdfExtractService pdfExtractService) {
         this.chatClient = chatClient;
         this.promptTemplateLoader = promptTemplateLoader;
         this.aiResponseParser = aiResponseParser;
+        this.pdfExtractService = pdfExtractService;
     }
 
     public AiParseResponse parseOrderFromText(String sourceText) {
@@ -49,6 +54,12 @@ public class AiOrchestrationService {
             log.error("AI parse-order request failed: {}", e.getClass().getSimpleName());
             throw new AiParseException(ERROR_MESSAGE, e);
         }
+    }
+
+    public AiParseResponse parseOrderFromPdf(MultipartFile file) {
+        String extractedText = pdfExtractService.extract(file);
+        log.info("PDF extracted: file={}, chars={}", file.getOriginalFilename(), extractedText.length());
+        return parseOrderFromText(extractedText);
     }
 
     private void logTokenUsage(ChatResponse response) {
