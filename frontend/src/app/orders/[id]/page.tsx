@@ -34,8 +34,14 @@ export default function EditOrderPage() {
   const currentOrder = useOrderStore((s) => s.currentOrder);
   const setAiSummary = useOrderStore((s) => s.setAiSummary);
   const setAiEmail = useOrderStore((s) => s.setAiEmail);
+  const resetForm = useOrderStore((s) => s.resetForm);
 
   useEffect(() => {
+    resetForm();
+    setOrder(null);
+    setFetchError(null);
+    setFetchLoading(true);
+
     orderApi
       .getOrder(id)
       .then((o) => {
@@ -45,7 +51,7 @@ export default function EditOrderPage() {
       })
       .catch(() => setFetchError('Unable to load order. Please try again.'))
       .finally(() => setFetchLoading(false));
-  }, [id, setAiSummary, setAiEmail]);
+  }, [id, resetForm, setAiSummary, setAiEmail]);
 
   const handleSubmit = async (values: OrderFormValues) => {
     setSaving(true);
@@ -123,6 +129,7 @@ export default function EditOrderPage() {
       </Box>
 
       <OrderForm
+        key={order.id}
         defaultValues={defaultValues}
         initialOptionIds={initialOptionIds}
         onSubmit={handleSubmit}
