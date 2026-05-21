@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import { OrderStatus } from '@/types/order';
 import { useOrderForm, type OrderFormValues } from '@/features/orders/useOrderForm';
 import { formatNtd } from '@/utils/formatPrice';
+import { getHighlightSx } from '@/utils/highlightAiFields';
 
 const COLOR_OPTIONS = ['白', '黑', '藍', '棕', '灰', '紅', '銀'] as const;
 
@@ -43,6 +44,7 @@ export default function OrderForm({
     selectedOptionIds,
     toggleOption,
     calculatedPrice,
+    aiHighlightedFields,
   } = useOrderForm(defaultValues, initialOptionIds);
 
   const {
@@ -77,6 +79,7 @@ export default function OrderForm({
           required
           error={!!errors.customerName}
           helperText={errors.customerName?.message}
+          sx={getHighlightSx('customerName', aiHighlightedFields)}
         />
         <TextField
           {...register('customerPhone')}
@@ -89,6 +92,7 @@ export default function OrderForm({
           required
           error={!!errors.customerPhone}
           helperText={errors.customerPhone?.message}
+          sx={getHighlightSx('customerPhone', aiHighlightedFields)}
         />
         <TextField
           {...register('customerEmail')}
@@ -96,7 +100,7 @@ export default function OrderForm({
           type="email"
           error={!!errors.customerEmail}
           helperText={errors.customerEmail?.message}
-          sx={{ gridColumn: { sm: 'span 2' } }}
+          sx={{ gridColumn: { sm: 'span 2' }, ...getHighlightSx('customerEmail', aiHighlightedFields) }}
         />
       </Box>
 
@@ -116,7 +120,7 @@ export default function OrderForm({
           name="vehicleId"
           control={control}
           render={({ field }) => (
-            <FormControl required error={!!errors.vehicleId}>
+            <FormControl required error={!!errors.vehicleId} sx={getHighlightSx('vehicleId', aiHighlightedFields)}>
               <InputLabel>車款</InputLabel>
               <Select
                 {...field}
@@ -142,7 +146,7 @@ export default function OrderForm({
           name="exteriorColor"
           control={control}
           render={({ field }) => (
-            <FormControl required error={!!errors.exteriorColor}>
+            <FormControl required error={!!errors.exteriorColor} sx={getHighlightSx('exteriorColor', aiHighlightedFields)}>
               <InputLabel>外裝顏色</InputLabel>
               <Select {...field} label="外裝顏色">
                 {COLOR_OPTIONS.map((color) => (
@@ -159,7 +163,7 @@ export default function OrderForm({
           name="interiorColor"
           control={control}
           render={({ field }) => (
-            <FormControl required error={!!errors.interiorColor}>
+            <FormControl required error={!!errors.interiorColor} sx={getHighlightSx('interiorColor', aiHighlightedFields)}>
               <InputLabel>內裝顏色</InputLabel>
               <Select {...field} label="內裝顏色">
                 {COLOR_OPTIONS.map((color) => (
@@ -255,6 +259,7 @@ export default function OrderForm({
           InputLabelProps={{ shrink: true }}
           error={!!errors.expectedDeliveryMonth}
           helperText={errors.expectedDeliveryMonth?.message}
+          sx={getHighlightSx('expectedDeliveryMonth', aiHighlightedFields)}
         />
         <Controller
           name="status"

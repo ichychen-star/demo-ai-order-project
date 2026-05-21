@@ -38,6 +38,8 @@ export function useOrderForm(
   const setField = useOrderStore((s) => s.setField);
   const setPriceResult = useOrderStore((s) => s.setPriceResult);
   const calculatedPrice = useOrderStore((s) => s.calculatedPrice);
+  const aiParseResult = useOrderStore((s) => s.aiParseResult);
+  const aiHighlightedFields = useOrderStore((s) => s.aiHighlightedFields);
 
   useEffect(() => {
     setVehiclesLoading(true);
@@ -118,6 +120,28 @@ export function useOrderForm(
     );
   }, []);
 
+  // Auto-fill form fields from AI parse result
+  useEffect(() => {
+    if (!aiParseResult) return;
+    const opts = { shouldValidate: true, shouldDirty: true } as const;
+    if (aiParseResult.customerName) form.setValue('customerName', aiParseResult.customerName, opts);
+    if (aiParseResult.customerPhone) form.setValue('customerPhone', aiParseResult.customerPhone, opts);
+    if (aiParseResult.customerEmail) form.setValue('customerEmail', aiParseResult.customerEmail, opts);
+    if (aiParseResult.exteriorColor) form.setValue('exteriorColor', aiParseResult.exteriorColor, opts);
+    if (aiParseResult.interiorColor) form.setValue('interiorColor', aiParseResult.interiorColor, opts);
+    if (aiParseResult.expectedDeliveryMonth)
+      form.setValue('expectedDeliveryMonth', aiParseResult.expectedDeliveryMonth, opts);
+
+    if ((aiParseResult.brand || aiParseResult.model) && vehicles.length > 0) {
+      const match = vehicles.find(
+        (v) =>
+          (!aiParseResult.brand || v.brand.toLowerCase() === aiParseResult.brand!.toLowerCase()) &&
+          (!aiParseResult.model || v.model.toLowerCase() === aiParseResult.model!.toLowerCase()),
+      );
+      if (match) form.setValue('vehicleId', match.id, opts);
+    }
+  }, [aiParseResult, form, vehicles]);
+
   return {
     form,
     vehicles,
@@ -127,5 +151,6 @@ export function useOrderForm(
     selectedOptionIds,
     toggleOption,
     calculatedPrice,
+    aiHighlightedFields,
   };
 }

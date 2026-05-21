@@ -1708,10 +1708,11 @@ Create the `AiInputPanel` component that provides the two-mode AI parse UI (past
 **Complexity:** M
 
 ---
-
-### TASK-AI-010
+z
 
 **Title:** AI Form Auto-Fill + Field Highlighting
+
+**Status:** ✅ DONE (2026-05-21)
 
 **Goal:**
 Wire the `AiParseResponse` from the store into `OrderForm` so AI-parsed values auto-fill form fields and AI-filled fields are visually highlighted.
@@ -1738,11 +1739,19 @@ Wire the `AiParseResponse` from the store into `OrderForm` so AI-parsed values a
 - `frontend/src/components/order/OrderForm.tsx` (extend)
 
 **Acceptance Criteria:**
-- After AI parse completes, `customerName` field is auto-populated with parsed value
-- AI-filled fields show visual highlight (yellow or colored background)
-- Confidence chip displays `0.92` as `92%`
-- Missing fields list displays as warning: "未解析欄位: customerPhone, exteriorColor"
-- User can still manually edit any auto-filled field
+- [x] After AI parse completes, `customerName` field is auto-populated with parsed value
+- [x] AI-filled fields show visual highlight (yellow background `#fffde7`)
+- [x] Confidence chip displays `0.92` as `92%` (green if ≥70%, warning color otherwise)
+- [x] Missing fields list displays as warning alert
+- [x] User can still manually edit any auto-filled field
+- [x] `pnpm type-check` passes with zero errors
+
+**Completion Summary:**
+- Created `frontend/src/utils/highlightAiFields.ts`: `getHighlightSx(fieldName, highlightedFields): SxProps<Theme>` — returns `{ '& .MuiInputBase-root': { bgcolor: '#fffde7' } }` when field is in highlighted set, else `{}`.
+- Extended `useOrderForm.ts`: reads `aiParseResult` and `aiHighlightedFields` from Zustand; `useEffect` watches `aiParseResult`+`vehicles` and calls `form.setValue` for all non-null direct fields; resolves `vehicleId` by matching `brand`/`model` (case-insensitive) against loaded vehicles list; returns `aiHighlightedFields`.
+- Extended `OrderForm.tsx`: imports `getHighlightSx`; destructures `aiHighlightedFields` from hook; applies highlight `sx` to all 7 form fields.
+- Extended `AiInputPanel.tsx`: reads `aiParseResult` from store; displays confidence `Chip` inline with parse button (success/warning color); displays `missingFields` as `Alert severity="warning"` below.
+- `SxProps<Theme>` explicit return type added to `getHighlightSx` to resolve MUI strict type constraint.
 
 **Complexity:** M
 

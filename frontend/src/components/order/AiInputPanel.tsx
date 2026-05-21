@@ -3,12 +3,14 @@ import React, { useRef, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useAiParse } from '@/features/orders/useAiParse';
+import { useOrderStore } from '@/store/orderStore';
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
 
@@ -20,6 +22,7 @@ export default function AiInputPanel() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { loading, error, parseText, parsePdf } = useAiParse();
+  const aiParseResult = useOrderStore((s) => s.aiParseResult);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: 0 | 1) => {
     setTabIndex(newValue);
@@ -111,15 +114,29 @@ export default function AiInputPanel() {
         </Alert>
       )}
 
-      <Button
-        variant="contained"
-        onClick={handleParse}
-        disabled={isParseDisabled}
-        startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}
-        sx={{ mt: 2 }}
-      >
-        AI 解析需求
-      </Button>
+      <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+        <Button
+          variant="contained"
+          onClick={handleParse}
+          disabled={isParseDisabled}
+          startIcon={loading ? <CircularProgress size={18} color="inherit" /> : undefined}
+        >
+          AI 解析需求
+        </Button>
+        {aiParseResult?.confidence != null && (
+          <Chip
+            label={`信心度 ${Math.round(aiParseResult.confidence * 100)}%`}
+            color={aiParseResult.confidence >= 0.7 ? 'success' : 'warning'}
+            size="small"
+          />
+        )}
+      </Box>
+
+      {aiParseResult?.missingFields != null && aiParseResult.missingFields.length > 0 && (
+        <Alert severity="warning" sx={{ mt: 1 }}>
+          未解析欄位：{aiParseResult.missingFields.join('、')}
+        </Alert>
+      )}
     </Box>
   );
 }
