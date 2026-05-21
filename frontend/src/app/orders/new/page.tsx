@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -21,10 +21,17 @@ import { useOrderStore } from '@/store/orderStore';
 export default function NewOrderPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [toast, setToast] = useState<{ open: boolean; severity: 'success' | 'error'; message: string }>({
     open: false, severity: 'success', message: '',
   });
   const currentOrder = useOrderStore((s) => s.currentOrder);
+  const resetForm = useOrderStore((s) => s.resetForm);
+
+  useEffect(() => {
+    resetForm();
+    setInitialized(true);
+  }, [resetForm]);
 
   const handleSubmit = async (values: OrderFormValues) => {
     setSaving(true);
@@ -49,6 +56,16 @@ export default function NewOrderPage() {
       setSaving(false);
     }
   };
+
+  if (!initialized) {
+    return (
+      <AppShell>
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
+        </Box>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>
