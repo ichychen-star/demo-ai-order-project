@@ -1401,7 +1401,7 @@ Create the three prompt template plain-text files in `resources/prompts/` with s
 
 ---
 
-### TASK-AI-002
+### TASK-AI-002 ✅ DONE
 
 **Title:** Azure OpenAI Config + Spring AI Integration + PromptTemplateLoader
 
