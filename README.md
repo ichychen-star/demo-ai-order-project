@@ -92,25 +92,58 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Secret | Description |
 |---|---|
-| `AZURE_VM_SSH_KEY` | SSH private key for the Azure VM |
+| `AZURE_VM_SSH_KEY` | SSH private key (PEM) for the `deploy` user on the Azure VM |
 | `AZURE_VM_HOST` | Azure VM public IP or hostname |
-| `SPRING_DATASOURCE_URL` | Production JDBC URL |
+| `DOMAIN` | Public domain or IP used in `NEXT_PUBLIC_API_BASE_URL` (e.g. `myapp.eastasia.cloudapp.azure.com`) |
+| `NEXT_PUBLIC_API_BASE_URL` | Full URL passed to the Next.js build (e.g. `https://myapp.eastasia.cloudapp.azure.com`) |
+| `SPRING_DATASOURCE_URL` | Azure Database for MySQL JDBC URL (`jdbc:mysql://<host>:3306/<db>?useSSL=true&requireSSL=true&serverTimezone=UTC`) |
 | `SPRING_DATASOURCE_USERNAME` | Production DB username |
 | `SPRING_DATASOURCE_PASSWORD` | Production DB password |
-| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI resource endpoint URL |
 | `AZURE_OPENAI_API_KEY` | Azure OpenAI API key |
-| `AZURE_OPENAI_DEPLOYMENT_NAME` | Deployed model name |
+| `AZURE_OPENAI_DEPLOYMENT_NAME` | Deployed model name (e.g. `gpt-4o`) |
 
 ---
 
 ## Deployment
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) §8 for the full Azure VM + Docker Compose deployment guide.
+### Azure VM Prerequisites
+
+Before the first deploy, provision the Azure VM with the following:
+
+1. **OS**: Ubuntu 22.04 LTS (Standard B2s or larger)
+2. **Ports open**: 80 (HTTP) and 22 (SSH) in the Azure Network Security Group
+3. **Docker**: Install Docker Engine and Docker Compose plugin
+   ```bash
+   curl -fsSL https://get.docker.com | sh
+   sudo usermod -aG docker deploy
+   ```
+4. **Deploy user**: Create a `deploy` user and add the `AZURE_VM_SSH_KEY` public key to `~/.ssh/authorized_keys`
+5. **Working directory**: Create `/opt/aivehicleorder/` and copy the deployment files:
+   ```bash
+   sudo mkdir -p /opt/aivehicleorder/nginx
+   # Copy from repo:
+   cp docker/docker-compose.prod.yml /opt/aivehicleorder/
+   cp docker/nginx/nginx.conf        /opt/aivehicleorder/nginx/
+   cp docker/backend.env.example     /opt/aivehicleorder/backend.env
+   # Edit backend.env with production credentials
+   nano /opt/aivehicleorder/backend.env
+   ```
+6. **GHCR login** (required for `docker compose pull`):
+   ```bash
+   echo $GITHUB_TOKEN | docker login ghcr.io -u <github-username> --password-stdin
+   ```
+
+### Deploy manually (from local)
 
 ```bash
-# Production
 docker compose -f docker/docker-compose.prod.yml up -d
 ```
+
+### Automated deploy (GitHub Actions)
+
+Push to `main` or trigger `workflow_dispatch` from the Actions tab.  
+The pipeline builds images → pushes to GHCR → SSH-deploys to the VM.
 
 ---
 

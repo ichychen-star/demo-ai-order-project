@@ -1998,6 +1998,8 @@ Complete the `ci.yml` GitHub Actions workflow with working backend test and fron
 
 **Title:** GitHub Actions Deploy Pipeline + Azure VM Setup
 
+**Status:** ✅ DONE (2026-05-23)
+
 **Goal:**
 Complete `deploy-prod.yml` to build Docker images, push to registry, and SSH-deploy to Azure VM; document Azure VM prerequisites in README.
 
@@ -2024,11 +2026,17 @@ Complete `deploy-prod.yml` to build Docker images, push to registry, and SSH-dep
 - `README.md` (update with deployment guide)
 
 **Acceptance Criteria:**
-- Workflow runs on push to `main` and on `workflow_dispatch`
-- GHCR push step uses `GITHUB_TOKEN` for authentication
-- SSH deploy step executes `docker compose pull && up -d` on the VM
-- README documents all 8 GitHub Secrets from ARCHITECTURE.md §8.3
-- README documents VM setup prerequisites
+- [x] Workflow triggers on `push: branches: [main]` and `workflow_dispatch`
+- [x] GHCR login with `GITHUB_TOKEN`; backend and frontend images pushed with correct tags
+- [x] SSH deploy step injects `GITHUB_REPOSITORY` and `DOMAIN` env vars then runs `docker compose pull && up -d`
+- [x] README documents 10 GitHub Secrets (8 from ARCHITECTURE.md §8.3 + `DOMAIN` + `NEXT_PUBLIC_API_BASE_URL`)
+- [x] README has "Azure VM Prerequisites" section covering Docker, ports, deploy user, working directory, GHCR login
+
+**Completion Summary:**
+- Added `push: branches: [main]` trigger to `deploy-prod.yml` (previously only `workflow_dispatch`).
+- Added `export GITHUB_REPOSITORY` and `export DOMAIN` to SSH deploy script so `docker-compose.prod.yml` can resolve its `${GITHUB_REPOSITORY}` and `${DOMAIN}` variables on the VM.
+- Expanded `README.md` GitHub Secrets table to include `DOMAIN` and `NEXT_PUBLIC_API_BASE_URL` with descriptions.
+- Added full "Azure VM Prerequisites" section: OS, ports, Docker install, deploy user setup, working directory layout, GHCR login.
 
 **Complexity:** M
 
