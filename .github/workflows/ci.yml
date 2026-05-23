@@ -20,7 +20,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend
-        run: mvn test -Dspring.profiles.active=test --no-transfer-progress
+        run: mvn verify "-Dspring.profiles.active=test" --no-transfer-progress
 
   frontend-ci:
     name: Frontend CI
@@ -36,7 +36,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: latest
 
       - name: Get pnpm store directory
         id: pnpm-cache
