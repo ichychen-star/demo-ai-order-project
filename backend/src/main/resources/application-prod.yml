@@ -20,7 +20,6 @@ spring:
     azure:
       openai:
         endpoint: ${AZURE_OPENAI_ENDPOINT}
-        api-key: ${AZURE_OPENAI_API_KEY}
         chat:
           options:
             deployment-name: ${AZURE_OPENAI_DEPLOYMENT_NAME}

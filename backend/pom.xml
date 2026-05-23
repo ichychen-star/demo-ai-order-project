@@ -78,6 +78,13 @@
       <artifactId>spring-ai-starter-model-azure-openai</artifactId>
     </dependency>
 
+    <!-- ── Azure AD — Service Principal / Managed Identity ─────── -->
+    <dependency>
+      <groupId>com.azure</groupId>
+      <artifactId>azure-identity</artifactId>
+      <version>1.15.4</version>
+    </dependency>
+
     <!-- ── PDF extraction ───────────────────────────────────────── -->
     <dependency>
       <groupId>org.apache.pdfbox</groupId>

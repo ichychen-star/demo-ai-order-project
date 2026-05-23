@@ -79,8 +79,10 @@ Open [http://localhost:3000](http://localhost:3000).
 | `SPRING_DATASOURCE_USERNAME` | Database username |
 | `SPRING_DATASOURCE_PASSWORD` | Database password |
 | `AZURE_OPENAI_ENDPOINT` | Azure OpenAI resource endpoint URL |
-| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key |
 | `AZURE_OPENAI_DEPLOYMENT_NAME` | Deployed model name (e.g. `gpt-4o`) |
+| `AZURE_TENANT_ID` | Azure AD tenant ID |
+| `AZURE_CLIENT_ID` | Service Principal application (client) ID |
+| `AZURE_CLIENT_SECRET` | Service Principal client secret value |
 
 ### Frontend environment variables (`docker/frontend.env`)
 
@@ -100,8 +102,10 @@ Open [http://localhost:3000](http://localhost:3000).
 | `SPRING_DATASOURCE_USERNAME` | Production DB username |
 | `SPRING_DATASOURCE_PASSWORD` | Production DB password |
 | `AZURE_OPENAI_ENDPOINT` | Azure OpenAI resource endpoint URL |
-| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key |
 | `AZURE_OPENAI_DEPLOYMENT_NAME` | Deployed model name (e.g. `gpt-4o`) |
+| `AZURE_TENANT_ID` | Azure AD tenant ID |
+| `AZURE_CLIENT_ID` | Service Principal application (client) ID |
+| `AZURE_CLIENT_SECRET` | Service Principal client secret value |
 
 ---
 
