@@ -18,8 +18,7 @@ public class PromptTemplateLoader {
 
     private static final String[] TEMPLATE_NAMES = {
         "parse-order-system",
-        "generate-summary-system",
-        "generate-email-system"
+        "generate-summary-system"
     };
 
     private final Map<String, String> templates = new HashMap<>();
