@@ -140,7 +140,14 @@ export function useOrderForm(
       );
       if (match) form.setValue('vehicleId', match.id, opts);
     }
-  }, [aiParseResult, form, vehicles]);
+
+    if (aiParseResult.options != null && aiParseResult.options.length > 0 && options.length > 0) {
+      const matchedIds = aiParseResult.options
+        .map((name) => options.find((opt) => opt.name.toLowerCase() === name.toLowerCase())?.id)
+        .filter((id): id is string => id !== undefined);
+      if (matchedIds.length > 0) setSelectedOptionIds(matchedIds);
+    }
+  }, [aiParseResult, form, vehicles, options, setSelectedOptionIds]);
 
   return {
     form,
