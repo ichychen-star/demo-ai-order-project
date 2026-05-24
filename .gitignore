@@ -26,6 +26,7 @@ yarn-error.log*
 docker/.env
 docker/backend.env
 docker/frontend.env
+backend/local.env
 *.key
 *.pem
 *.p12

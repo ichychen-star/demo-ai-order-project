@@ -38,8 +38,7 @@ spring:
   ai:
     azure:
       openai:
-        endpoint: ${AZURE_OPENAI_ENDPOINT:http://localhost:11434}
-        api-key: ${AZURE_OPENAI_API_KEY:}
+        endpoint: ${AZURE_OPENAI_ENDPOINT}
         chat:
           options:
             deployment-name: ${AZURE_OPENAI_DEPLOYMENT_NAME:gpt-4o}
