@@ -17,4 +17,5 @@ Get-Content $envFile | ForEach-Object {
 Write-Host "Environment loaded from local.env" -ForegroundColor Green
 Write-Host "Starting Spring Boot on http://localhost:8080 ..." -ForegroundColor Cyan
 
+Set-Location $PSScriptRoot
 mvn spring-boot:run
