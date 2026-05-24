@@ -36,7 +36,6 @@ public class OrderMapper {
                 .sourceText(order.getSourceText())
                 .uploadedFileName(order.getUploadedFileName())
                 .aiSummary(order.getAiSummary())
-                .aiEmail(order.getAiEmail())
                 .deleted(order.isDeleted())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())

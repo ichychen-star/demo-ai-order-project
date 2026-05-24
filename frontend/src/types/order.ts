@@ -29,7 +29,6 @@ export interface Order {
   sourceText: string | null;
   uploadedFileName: string | null;
   aiSummary: string | null;
-  aiEmail: string | null;
   deleted: boolean;
   createdAt: string;
   updatedAt: string;

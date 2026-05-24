@@ -51,11 +51,4 @@ public class AiController {
         return AiGenerateResponse.builder().summary(summary).build();
     }
 
-    @PostMapping("/generate-email")
-    @Operation(summary = "Generate confirmation email", description = "Generates a Traditional Chinese confirmation email draft for an existing order and persists it")
-    public AiGenerateResponse generateEmail(@Valid @RequestBody AiGenerateRequest request) {
-        OrderResponse order = orderService.getOrder(request.getOrderId());
-        String email = aiOrchestrationService.generateEmail(order);
-        return AiGenerateResponse.builder().email(email).build();
-    }
 }

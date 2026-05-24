@@ -22,5 +22,4 @@ export interface AiGenerateRequest {
 
 export interface AiGenerateResponse {
   summary?: string;
-  email?: string;
 }

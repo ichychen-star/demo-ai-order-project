@@ -76,17 +76,7 @@ public class AiOrchestrationService {
         }
         String systemPrompt = promptTemplateLoader.getTemplate("generate-summary-system");
         String result = callAiForText(systemPrompt, buildOrderUserMessage(order), "generate-summary");
-        orderService.updateAiContent(order.getId(), result, null);
-        return result;
-    }
-
-    public String generateEmail(OrderResponse order) {
-        if (order.getAiEmail() != null) {
-            log.warn("Re-generating AI email for order: {}", order.getId());
-        }
-        String systemPrompt = promptTemplateLoader.getTemplate("generate-email-system");
-        String result = callAiForText(systemPrompt, buildOrderUserMessage(order), "generate-email");
-        orderService.updateAiContent(order.getId(), null, result);
+        orderService.updateAiSummary(order.getId(), result);
         return result;
     }
 

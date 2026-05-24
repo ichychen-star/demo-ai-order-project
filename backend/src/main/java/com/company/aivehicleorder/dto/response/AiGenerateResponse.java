@@ -14,5 +14,4 @@ import lombok.NoArgsConstructor;
 public class AiGenerateResponse {
 
     private String summary;
-    private String email;
 }

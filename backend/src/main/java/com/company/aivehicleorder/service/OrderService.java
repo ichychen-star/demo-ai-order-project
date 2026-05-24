@@ -150,14 +150,13 @@ public class OrderService {
     }
 
     @Transactional
-    public void updateAiContent(UUID orderId, String aiSummary, String aiEmail) {
+    public void updateAiSummary(UUID orderId, String aiSummary) {
         Order order = orderRepository.findById(orderId)
                 .filter(o -> !o.isDeleted())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found: " + orderId));
-        if (aiSummary != null) order.setAiSummary(aiSummary);
-        if (aiEmail != null) order.setAiEmail(aiEmail);
+        order.setAiSummary(aiSummary);
         orderRepository.save(order);
-        log.info("Updated AI content for order: {}", orderId);
+        log.info("Updated AI summary for order: {}", orderId);
     }
 
 }

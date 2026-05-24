@@ -25,8 +25,4 @@ export const aiApi = {
       .post<AiGenerateResponse>('/api/ai/generate-summary', data)
       .then((r) => r.data),
 
-  generateEmail: (data: AiGenerateRequest): Promise<AiGenerateResponse> =>
-    apiClient
-      .post<AiGenerateResponse>('/api/ai/generate-email', data)
-      .then((r) => r.data),
 };

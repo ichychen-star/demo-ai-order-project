@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import AppShell from '@/components/layout/AppShell';
-import AiEmailPanel from '@/components/ai/AiEmailPanel';
 import AiInputPanel from '@/components/order/AiInputPanel';
 import AiSummaryPanel from '@/components/ai/AiSummaryPanel';
 import OrderForm from '@/components/order/OrderForm';
@@ -33,7 +32,6 @@ export default function EditOrderPage() {
 
   const currentOrder = useOrderStore((s) => s.currentOrder);
   const setAiSummary = useOrderStore((s) => s.setAiSummary);
-  const setAiEmail = useOrderStore((s) => s.setAiEmail);
   const resetForm = useOrderStore((s) => s.resetForm);
 
   useEffect(() => {
@@ -47,11 +45,10 @@ export default function EditOrderPage() {
       .then((o) => {
         setOrder(o);
         if (o.aiSummary) setAiSummary(o.aiSummary);
-        if (o.aiEmail) setAiEmail(o.aiEmail);
       })
       .catch(() => setFetchError('Unable to load order. Please try again.'))
       .finally(() => setFetchLoading(false));
-  }, [id, resetForm, setAiSummary, setAiEmail]);
+  }, [id, resetForm, setAiSummary]);
 
   const handleSubmit = async (values: OrderFormValues) => {
     setSaving(true);
@@ -148,16 +145,12 @@ export default function EditOrderPage() {
       <Box
         sx={{
           mt: 4,
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          gap: 3,
           borderTop: '1px solid',
           borderColor: 'divider',
           pt: 3,
         }}
       >
         <AiSummaryPanel orderId={id} />
-        <AiEmailPanel orderId={id} />
       </Box>
 
       <Snackbar

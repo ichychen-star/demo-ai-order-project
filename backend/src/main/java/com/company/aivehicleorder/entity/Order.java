@@ -74,9 +74,6 @@ public class Order {
     @Column(name = "ai_summary", columnDefinition = "TEXT")
     private String aiSummary;
 
-    @Column(name = "ai_email", columnDefinition = "TEXT")
-    private String aiEmail;
-
     @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 

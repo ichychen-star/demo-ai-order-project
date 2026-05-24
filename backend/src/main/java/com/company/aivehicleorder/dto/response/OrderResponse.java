@@ -34,7 +34,6 @@ public class OrderResponse {
     private String sourceText;
     private String uploadedFileName;
     private String aiSummary;
-    private String aiEmail;
     private boolean deleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

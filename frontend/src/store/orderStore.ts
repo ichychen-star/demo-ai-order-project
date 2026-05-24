@@ -9,7 +9,6 @@ interface OrderState {
   aiHighlightedFields: Set<string>;
   calculatedPrice: PriceCalculationResponse | null;
   aiSummary: string | null;
-  aiEmail: string | null;
   isAiParsing: boolean;
   isSaving: boolean;
 }
@@ -19,7 +18,6 @@ interface OrderActions {
   setAiResult: (result: AiParseResponse) => void;
   setPriceResult: (price: PriceCalculationResponse) => void;
   setAiSummary: (summary: string) => void;
-  setAiEmail: (email: string) => void;
   setIsAiParsing: (parsing: boolean) => void;
   setIsSaving: (saving: boolean) => void;
   resetForm: () => void;
@@ -33,7 +31,6 @@ const createInitialState = (): OrderState => ({
   aiHighlightedFields: new Set<string>(),
   calculatedPrice: null,
   aiSummary: null,
-  aiEmail: null,
   isAiParsing: false,
   isSaving: false,
 });
@@ -73,8 +70,6 @@ export const useOrderStore = create<OrderStore>((set) => ({
   setPriceResult: (price) => set({ calculatedPrice: price }),
 
   setAiSummary: (summary) => set({ aiSummary: summary }),
-
-  setAiEmail: (email) => set({ aiEmail: email }),
 
   setIsAiParsing: (parsing) => set({ isAiParsing: parsing }),
 

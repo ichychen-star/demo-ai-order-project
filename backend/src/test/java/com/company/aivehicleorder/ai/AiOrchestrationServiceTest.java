@@ -156,19 +156,6 @@ class AiOrchestrationServiceTest {
         assertThat(result).isEqualTo("王先生訂購了 BMW X3。");
     }
 
-    @Test
-    void generateEmail_returnsChineseText_andUpdatesOrder() {
-        OrderResponse order = buildOrderResponse();
-        lenient().when(promptTemplateLoader.getTemplate("generate-email-system")).thenReturn("email system prompt");
-        ChatResponse chatResponse = buildChatResponse("親愛的王先生您好：感謝您選擇本公司服務。");
-        when(chatClient.prompt().system(anyString()).user(anyString()).call().chatResponse())
-                .thenReturn(chatResponse);
-
-        String result = service.generateEmail(order);
-
-        assertThat(result).contains("親愛的王先生");
-    }
-
     private OrderResponse buildOrderResponse() {
         return OrderResponse.builder()
                 .id(UUID.randomUUID())
