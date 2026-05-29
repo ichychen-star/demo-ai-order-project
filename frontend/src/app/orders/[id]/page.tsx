@@ -8,6 +8,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import AppShell from '@/components/layout/AppShell';
 import AiInputPanel from '@/components/order/AiInputPanel';
 import AiSummaryPanel from '@/components/ai/AiSummaryPanel';
@@ -46,7 +47,7 @@ export default function EditOrderPage() {
         setOrder(o);
         if (o.aiSummary) setAiSummary(o.aiSummary);
       })
-      .catch(() => setFetchError('Unable to load order. Please try again.'))
+      .catch(() => setFetchError('無法載入訂單，請稍後再試。'))
       .finally(() => setFetchLoading(false));
   }, [id, resetForm, setAiSummary]);
 
@@ -107,18 +108,12 @@ export default function EditOrderPage() {
 
   return (
     <AppShell>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+        <ArticleOutlinedIcon color="primary" />
         <Box>
-          <Typography variant="h5" fontWeight="bold">
-            Edit Order
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {order.orderNo}
-          </Typography>
+          <Typography variant="h5" fontWeight="bold">編輯訂單</Typography>
+          <Typography variant="body2" color="text.secondary">{order.orderNo}</Typography>
         </Box>
-        <Button variant="outlined" onClick={() => router.push('/orders')}>
-          Back to List
-        </Button>
       </Box>
 
       <Box sx={{ mb: 3 }}>
@@ -130,28 +125,23 @@ export default function EditOrderPage() {
         defaultValues={defaultValues}
         initialOptionIds={initialOptionIds}
         onSubmit={handleSubmit}
+        leftFooter={<AiSummaryPanel orderId={id} />}
         actions={
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={saving}
-            startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={saving}
+              startIcon={saving ? <CircularProgress size={16} color="inherit" /> : undefined}
+            >
+              {saving ? '儲存中...' : '儲存變更'}
+            </Button>
+            <Button variant="outlined" onClick={() => router.push('/orders')}>
+              返回列表
+            </Button>
+          </Box>
         }
       />
-
-      <Box
-        sx={{
-          mt: 4,
-          borderTop: '1px solid',
-          borderColor: 'divider',
-          pt: 3,
-        }}
-      >
-        <AiSummaryPanel orderId={id} />
-      </Box>
 
       <Snackbar
         open={toast.open}

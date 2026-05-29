@@ -9,15 +9,15 @@ import { OrderStatus } from '@/types/order';
 import type { Vehicle, VehicleOption } from '@/types/vehicle';
 
 export const orderFormSchema = z.object({
-  customerName: z.string().min(1, '客戶名稱為必填'),
+  customerName: z.string().min(1, '請輸入客戶名稱'),
   customerPhone: z.string()
-    .min(1, '客戶電話為必填')
-    .max(10, '電話不能超過10碼')
+    .min(1, '請輸入客戶電話')
+    .max(10, '電話不能超過 10 碼')
     .regex(/^\d+$/, '只能輸入數字'),
   customerEmail: z.string().email('請輸入正確的電子郵件格式').or(z.literal('')).optional(),
   vehicleId: z.string().min(1, '請選擇車款'),
-  exteriorColor: z.string().min(1, '外裝顏色為必填'),
-  interiorColor: z.string().min(1, '內裝顏色為必填'),
+  exteriorColor: z.string().min(1, '請選擇外裝顏色'),
+  interiorColor: z.string().min(1, '請選擇內裝顏色'),
   expectedDeliveryMonth: z.string().min(1, '請選擇預計交車月份'),
   status: z.nativeEnum(OrderStatus),
 });
@@ -72,10 +72,8 @@ export function useOrderForm(
     },
   });
 
-  // Reactive vehicleId — triggers re-render when changed, used for price calc dependency
   const vehicleId = form.watch('vehicleId');
 
-  // Sync form field changes to Zustand store — explicit per-field for type safety
   useEffect(() => {
     const subscription = form.watch((values) => {
       if (values.customerName !== undefined) setField('customerName', values.customerName);
@@ -91,12 +89,10 @@ export function useOrderForm(
     return () => subscription.unsubscribe();
   }, [form, setField]);
 
-  // Sync selected options to Zustand
   useEffect(() => {
     setField('optionIds', selectedOptionIds);
   }, [selectedOptionIds, setField]);
 
-  // Debounced price calculation on vehicleId or optionIds change
   useEffect(() => {
     if (!vehicleId) return;
 
@@ -120,7 +116,6 @@ export function useOrderForm(
     );
   }, []);
 
-  // Auto-fill form fields from AI parse result
   useEffect(() => {
     if (!aiParseResult) return;
     const opts = { shouldValidate: true, shouldDirty: true } as const;
@@ -135,8 +130,8 @@ export function useOrderForm(
     if ((aiParseResult.brand || aiParseResult.model) && vehicles.length > 0) {
       const match = vehicles.find(
         (v) =>
-          (!aiParseResult.brand || v.brand.toLowerCase() === aiParseResult.brand!.toLowerCase()) &&
-          (!aiParseResult.model || v.model.toLowerCase() === aiParseResult.model!.toLowerCase()),
+          (!aiParseResult.brand || v.brand.toLowerCase() === aiParseResult.brand.toLowerCase()) &&
+          (!aiParseResult.model || v.model.toLowerCase() === aiParseResult.model.toLowerCase()),
       );
       if (match) form.setValue('vehicleId', match.id, opts);
     }
@@ -147,7 +142,7 @@ export function useOrderForm(
         .filter((id): id is string => id !== undefined);
       if (matchedIds.length > 0) setSelectedOptionIds(matchedIds);
     }
-  }, [aiParseResult, form, vehicles, options, setSelectedOptionIds]);
+  }, [aiParseResult, form, vehicles, options]);
 
   return {
     form,

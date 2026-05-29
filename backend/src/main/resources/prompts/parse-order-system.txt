@@ -10,7 +10,7 @@ Extract vehicle order information from the customer message and return a JSON ob
 4. Use ONLY the vehicle brands and models listed in the catalog below. If the text refers to an unknown model, set brand and model to null.
 5. Use ONLY the option names listed in the catalog below. Ignore unrecognised options.
 6. Normalise exteriorColor and interiorColor to the closest single Chinese color word (e.g. 白, 黑, 銀, 灰, 藍, 紅, 棕).
-7. expectedDeliveryMonth must be in YYYY-MM format. Resolve relative expressions (e.g. "明年六月") against the current year/month.
+7. expectedDeliveryMonth must be in YYYY-MM format. Today is {currentDate}. Resolve relative expressions (e.g. "明年六月", "下個月") using this date.
 8. confidence: your estimated parse accuracy from 0.0 (cannot parse) to 1.0 (fully confident).
 9. missingFields: list the names of required fields that could not be extracted.
 
@@ -79,7 +79,7 @@ Output:
   "exteriorColor": "銀",
   "interiorColor": null,
   "options": ["HUD 抬頭顯示", "Burmester 音響"],
-  "expectedDeliveryMonth": "2026-03",
+  "expectedDeliveryMonth": "2027-03",
   "confidence": 0.80,
   "missingFields": ["customerPhone", "interiorColor"]
 }

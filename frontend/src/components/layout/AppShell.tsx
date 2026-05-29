@@ -18,7 +18,7 @@ export default function AppShell({ children, rightPanel }: AppShellProps) {
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
         <Sidebar />
-        <Box component="main" sx={{ flexGrow: 1, p:3, minWidth: 0 }}>
+        <Box component="main" sx={{ flexGrow: 1, py: 3, px: 2, minWidth: 0 }}>
           {children}
         </Box>
         {rightPanel != null && (

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +44,9 @@ public class AiOrchestrationService {
 
     public AiParseResponse parseOrderFromText(String sourceText) {
         String cappedText = cap(sourceText, INPUT_CHAR_LIMIT);
-        String systemPrompt = promptTemplateLoader.getTemplate("parse-order-system");
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String systemPrompt = promptTemplateLoader.getTemplate("parse-order-system")
+                .replace("{currentDate}", currentDate);
 
         try {
             ChatResponse chatResponse = chatClient.prompt()
