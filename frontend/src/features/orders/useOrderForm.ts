@@ -75,6 +75,19 @@ export function useOrderForm(
   const vehicleId = form.watch('vehicleId');
 
   useEffect(() => {
+    if (!defaultValues) return;
+    if (defaultValues.customerName)          setField('customerName', defaultValues.customerName);
+    if (defaultValues.customerPhone)         setField('customerPhone', defaultValues.customerPhone);
+    if (defaultValues.customerEmail)         setField('customerEmail', defaultValues.customerEmail);
+    if (defaultValues.vehicleId)             setField('vehicleId', defaultValues.vehicleId);
+    if (defaultValues.exteriorColor)         setField('exteriorColor', defaultValues.exteriorColor);
+    if (defaultValues.interiorColor)         setField('interiorColor', defaultValues.interiorColor);
+    if (defaultValues.expectedDeliveryMonth) setField('expectedDeliveryMonth', defaultValues.expectedDeliveryMonth);
+    if (defaultValues.status)                setField('status', defaultValues.status);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     const subscription = form.watch((values) => {
       if (values.customerName !== undefined) setField('customerName', values.customerName);
       if (values.customerPhone !== undefined) setField('customerPhone', values.customerPhone);
