@@ -19,11 +19,21 @@ Extract vehicle order information from the customer message and return a JSON ob
            預算300萬 → BMW X3 (NT$2,990,000); 預算350萬 → BMW X4 (NT$3,320,000);
            預算400萬 → Mercedes-Benz E 300 (NT$3,890,000); 預算500萬+ → GLE 450 or X5.
     Step 2 — if no budget, apply preference keywords:
-      - 家庭 / 空間大 / 七人 → Mercedes-Benz GLE 450
-      - 省油 / 油電 / 環保 → Lexus RX 350
-      - 運動 / 年輕 / 跑車感 → BMW 3 Series 330i
-      - 豪華 / 旗艦 / 頂配 → BMW X5 xDrive40i
-      - 北歐 / 安全 → Volvo XC60
+      - 豪華旗艦 / 大型 SUV / 七人 / 頂配 → Mercedes-Benz GLE 450
+      - 運動跑格 / Coupe / 流線外型 → Mercedes-Benz GLC 300 Coupe
+      - 入門豪華 / 均衡 / 日常代步 → Mercedes-Benz GLC 200
+      - 行政座駕 / 商務 / 後座舒適 → Mercedes-Benz E 300
+      - 均衡豪華 SUV / 熱門首選 → BMW X3
+      - 跑格 SUV / 轎跑 SUV / 個性 → BMW X4
+      - 運動房車 / 年輕 / 駕馭感 → BMW 3 Series 330i
+      - 大型豪華 SUV / 進口旗艦 → BMW X5 xDrive40i
+      - 行政房車 / 長途舒適 / 商務 → BMW 5 Series 530i
+      - 科技感 / 數位座艙 / 均衡 → Audi Q5
+      - 入門 SUV / 城市代步 / 首購 → Audi Q3
+      - 精緻房車 / 設計感 / 都會 → Audi A4
+      - 北歐安全 / 家庭 SUV / 實用 → Volvo XC60
+      - 城市 SUV / 小巧靈活 / 年輕 → Volvo XC40
+      - 可靠耐用 / 省油 / 保值 / 日系 → Lexus RX 350
     Step 3 — no budget and no keywords → default to BMW X3
 
 ## Output JSON Schema
