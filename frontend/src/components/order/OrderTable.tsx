@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -18,11 +18,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { type Order, OrderStatus } from '@/types/order';
 import { formatNtd } from '@/utils/formatPrice';
+
+type SortField = 'orderNo' | 'customerName' | 'totalPrice' | 'status' | 'expectedDeliveryMonth' | 'createdAt';
 
 const STATUS_SX: Record<OrderStatus, { bgcolor: string; color: string }> = {
   [OrderStatus.DRAFT]:     { bgcolor: '#F3F4F6', color: '#4B5563' },
@@ -47,6 +50,8 @@ const ROWS_PER_PAGE = 10;
 export default function OrderTable({ orders, onEdit, onDelete }: OrderTableProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [sortField, setSortField] = useState<SortField>('orderNo');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const handleDeleteClick  = (id: string) => setPendingDeleteId(id);
   const handleCancelDelete = () => setPendingDeleteId(null);
@@ -57,11 +62,30 @@ export default function OrderTable({ orders, onEdit, onDelete }: OrderTableProps
     }
   };
 
-  const totalPages = Math.max(1, Math.ceil(orders.length / ROWS_PER_PAGE));
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDir('desc');
+    }
+    setPage(1);
+  };
+
+  const sortedOrders = useMemo(() => {
+    return [...orders].sort((a, b) => {
+      const aVal = a[sortField] ?? '';
+      const bVal = b[sortField] ?? '';
+      const cmp = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [orders, sortField, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedOrders.length / ROWS_PER_PAGE));
   const safePage   = Math.min(page, totalPages);
-  const from       = orders.length === 0 ? 0 : (safePage - 1) * ROWS_PER_PAGE + 1;
-  const to         = Math.min(safePage * ROWS_PER_PAGE, orders.length);
-  const pageOrders = orders.slice((safePage - 1) * ROWS_PER_PAGE, safePage * ROWS_PER_PAGE);
+  const from       = sortedOrders.length === 0 ? 0 : (safePage - 1) * ROWS_PER_PAGE + 1;
+  const to         = Math.min(safePage * ROWS_PER_PAGE, sortedOrders.length);
+  const pageOrders = sortedOrders.slice((safePage - 1) * ROWS_PER_PAGE, safePage * ROWS_PER_PAGE);
 
   const cellSx = { py: 1 } as const;
 
@@ -81,13 +105,29 @@ export default function OrderTable({ orders, onEdit, onDelete }: OrderTableProps
           <Table aria-label="order list">
             <TableHead>
               <TableRow>
-                <TableCell>Order No.</TableCell>
-                <TableCell>Customer Name</TableCell>
-                <TableCell>Vehicle Model</TableCell>
-                <TableCell align="right">Total Price</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Delivery Month</TableCell>
-                <TableCell>Created At</TableCell>
+                {(
+                  [
+                    { label: 'Order No.',      field: 'orderNo'               },
+                    { label: 'Customer Name',  field: 'customerName'          },
+                    { label: 'Vehicle Model',  field: null                    },
+                    { label: 'Total Price',    field: 'totalPrice', align: 'right' },
+                    { label: 'Status',         field: 'status'                },
+                    { label: 'Delivery Month', field: 'expectedDeliveryMonth' },
+                    { label: 'Created At',     field: 'createdAt'             },
+                  ] as { label: string; field: SortField | null; align?: 'right' }[]
+                ).map(({ label, field, align }) => (
+                  <TableCell key={label} align={align}>
+                    {field ? (
+                      <TableSortLabel
+                        active={sortField === field}
+                        direction={sortField === field ? sortDir : 'desc'}
+                        onClick={() => handleSort(field)}
+                      >
+                        {label}
+                      </TableSortLabel>
+                    ) : label}
+                  </TableCell>
+                ))}
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
