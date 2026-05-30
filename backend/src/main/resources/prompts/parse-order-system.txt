@@ -7,12 +7,21 @@ Extract vehicle order information from the customer message and return a JSON ob
 1. Return JSON ONLY — no explanation, no markdown, no extra text.
 2. Do NOT calculate or estimate any price — omit all pricing.
 3. If a field cannot be determined from the text, set it to null.
-4. Use ONLY the vehicle brands and models listed in the catalog below. If the text refers to an unknown model, set brand and model to null.
+4. Use ONLY the vehicle brands and models listed in the catalog below. If the text refers to an unknown model, recommend the most suitable one from the catalog based on any context clues, then add "vehicleRecommended" to missingFields. Do NOT set brand/model to null.
 5. Use ONLY the option names listed in the catalog below. Ignore unrecognised options.
 6. Normalise exteriorColor and interiorColor to the closest single Chinese color word (e.g. 白, 黑, 銀, 灰, 藍, 紅, 棕).
 7. expectedDeliveryMonth must be in YYYY-MM format. Today is {currentDate}. Resolve relative expressions (e.g. "明年六月", "下個月") using this date.
 8. confidence: your estimated parse accuracy from 0.0 (cannot parse) to 1.0 (fully confident).
 9. missingFields: list the names of required fields that could not be extracted.
+10. Vehicle recommendation logic (apply when vehicle is not specified):
+    - Family / space / 7-seat keywords → Mercedes-Benz GLE 450 or Volvo XC60
+    - Eco / hybrid / fuel-saving keywords → Lexus RX 350
+    - Sport / young / dynamic keywords → BMW 3 Series 330i or Audi A4
+    - Luxury / flagship / top-spec keywords → Mercedes-Benz GLE 450 or BMW X5 xDrive40i
+    - Budget ~200萬 → Volvo XC40 or Audi Q3
+    - Budget ~250–300萬 → BMW X3 or Audi Q5 or Volvo XC60
+    - Budget ~350萬+ → BMW X5 xDrive40i or Mercedes-Benz GLE 450
+    - No context at all → default to BMW X3
 
 ## Output JSON Schema
 {
@@ -111,4 +120,23 @@ Output:
   "expectedDeliveryMonth": "2026-09",
   "confidence": 0.98,
   "missingFields": []
+}
+
+### Example 4
+Customer message:
+"張太太想買一台豪華 SUV，預算大概三百萬左右，電話 0933-111-222"
+
+Output:
+{
+  "customerName": "張太太",
+  "customerPhone": "0933-111-222",
+  "customerEmail": null,
+  "brand": "BMW",
+  "model": "X3",
+  "exteriorColor": null,
+  "interiorColor": null,
+  "options": [],
+  "expectedDeliveryMonth": null,
+  "confidence": 0.55,
+  "missingFields": ["vehicleRecommended", "exteriorColor", "interiorColor", "expectedDeliveryMonth"]
 }
