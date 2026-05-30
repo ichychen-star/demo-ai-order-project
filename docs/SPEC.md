@@ -39,7 +39,6 @@ MVP Demo 必須完成：
 | 訂單建立     | 可成功建立與儲存訂單               |
 | 價格計算     | 即時計算總價                   |
 | AI 摘要    | 可產生訂單摘要                  |
-| AI 客戶信   | 可產生客戶確認信                 |
 | Azure 部署 | 可於 Azure VM 使用 Docker 啟動 |
 
 ---
@@ -56,7 +55,6 @@ MVP Demo 必須完成：
 | AI Parsing        | Text / PDF                    |
 | Price Calculation | Vehicle + Options             |
 | AI Summary        | Generate order summary        |
-| AI Email          | Generate customer email draft |
 | Deployment        | Azure Docker deployment       |
 
 ---
@@ -68,7 +66,7 @@ MVP Demo 必須完成：
 | Login/Auth          | MVP 不做       |
 | RBAC                | MVP 不做       |
 | OCR                 | 不處理掃描 PDF    |
-| Real Email Sending  | 僅產生草稿        |
+| Email 功能          | 不在 MVP 範圍內   |
 | Vehicle CRUD        | 使用 seed data |
 | Option CRUD         | 使用 seed data |
 | Reporting Dashboard | 非核心流程        |
@@ -129,7 +127,6 @@ MVP Demo 必須完成：
 
 7. AI generates:
    - Order summary
-   - Customer confirmation email
 ```
 
 ---
@@ -360,7 +357,6 @@ Buttons:
 
 ```text
 AI 產生摘要
-AI 產生客戶確認信
 ```
 
 ---
@@ -401,18 +397,6 @@ AI 產生客戶確認信
 | Options     |
 | Delivery    |
 | Total Price |
-
----
-
-## Section B — AI Customer Email Draft
-
-內容：
-
-```text
-親愛的王先生您好：
-
-以下為您的訂單資訊...
-```
 
 ---
 
@@ -477,7 +461,6 @@ OrderOption
 | source_text             | text          |
 | uploaded_file_name      | varchar(255)  |
 | ai_summary              | text          |
-| ai_email                | text          |
 | deleted                 | boolean       |
 | created_at              | timestamp     |
 | updated_at              | timestamp     |
@@ -547,7 +530,6 @@ total_price = vehicle_base_price + \sum(option_price)
 | POST   | /api/ai/parse-text       |
 | POST   | /api/ai/parse-pdf        |
 | POST   | /api/ai/generate-summary |
-| POST   | /api/ai/generate-email   |
 
 ---
 
@@ -828,7 +810,7 @@ src/
 | D6  | Frontend integration  |
 | D7  | AI parse text         |
 | D8  | PDF parsing           |
-| D9  | AI summary/email      |
+| D9  | AI summary            |
 | D10 | Docker + Azure deploy |
 
 ---
