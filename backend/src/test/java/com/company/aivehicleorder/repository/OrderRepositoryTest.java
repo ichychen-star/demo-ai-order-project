@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -92,7 +93,8 @@ class OrderRepositoryTest {
         ));
 
         List<Order> result = orderRepository
-                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining("DRAFT", "林");
+                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                        "DRAFT", "林", Sort.by(Sort.Direction.DESC, "orderNo"));
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getCustomerName()).isEqualTo("林小明");
@@ -107,7 +109,8 @@ class OrderRepositoryTest {
         ));
 
         List<Order> result = orderRepository
-                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining("", "");
+                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                        "", "", Sort.by(Sort.Direction.DESC, "orderNo"));
 
         assertThat(result).hasSize(2);
     }
@@ -120,10 +123,31 @@ class OrderRepositoryTest {
         ));
 
         List<Order> result = orderRepository
-                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining("DRAFT", "林");
+                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                        "DRAFT", "林", Sort.by(Sort.Direction.DESC, "orderNo"));
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getOrderNo()).isEqualTo("ORD-001");
+    }
+
+    @Test
+    void searchQuery_returnsOrdersSortedByOrderNoDesc() {
+        orderRepository.saveAll(List.of(
+                buildOrder("ORD-20260520-0001", "林俊賢", OrderStatus.DRAFT.name(), false),
+                buildOrder("ORD-20260530-0003", "陳美玲", OrderStatus.DRAFT.name(), false),
+                buildOrder("ORD-20260525-0002", "王大明", OrderStatus.DRAFT.name(), false)
+        ));
+
+        List<Order> result = orderRepository
+                .findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                        "", "", Sort.by(Sort.Direction.DESC, "orderNo"));
+
+        assertThat(result).extracting(Order::getOrderNo)
+                .containsExactly(
+                        "ORD-20260530-0003",
+                        "ORD-20260525-0002",
+                        "ORD-20260520-0001"
+                );
     }
 
     // ── TASK-BE-003: Order entity lifecycle ─────────────────────────────────

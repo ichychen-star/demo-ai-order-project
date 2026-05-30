@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -132,23 +134,41 @@ class OrderServiceTest {
 
     @Test
     void listOrders_withNoFilters_queriesDeletedFalseMethod() {
-        when(orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining("", ""))
-                .thenReturn(List.of());
+        when(orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                eq(""), eq(""), any(Sort.class))).thenReturn(List.of());
 
         List<OrderResponse> result = orderService.listOrders(null, null);
 
-        verify(orderRepository).findByDeletedFalseAndStatusContainingAndCustomerNameContaining("", "");
+        verify(orderRepository).findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                eq(""), eq(""), any(Sort.class));
         assertThat(result).isEmpty();
     }
 
     @Test
     void listOrders_withKeywordAndStatus_passesFiltersToRepository() {
-        when(orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining("DRAFT", "陳"))
-                .thenReturn(List.of());
+        when(orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                eq("DRAFT"), eq("陳"), any(Sort.class))).thenReturn(List.of());
 
         orderService.listOrders("陳", "DRAFT");
 
-        verify(orderRepository).findByDeletedFalseAndStatusContainingAndCustomerNameContaining("DRAFT", "陳");
+        verify(orderRepository).findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                eq("DRAFT"), eq("陳"), any(Sort.class));
+    }
+
+    @Test
+    void listOrders_passesSortByOrderNoDesc() {
+        when(orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                any(), any(), any(Sort.class))).thenReturn(List.of());
+
+        orderService.listOrders(null, null);
+
+        ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+        verify(orderRepository).findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
+                eq(""), eq(""), sortCaptor.capture());
+
+        Sort.Order sortOrder = sortCaptor.getValue().getOrderFor("orderNo");
+        assertThat(sortOrder).isNotNull();
+        assertThat(sortOrder.isDescending()).isTrue();
     }
 
     // ── getOrder ─────────────────────────────────────────────────────────────

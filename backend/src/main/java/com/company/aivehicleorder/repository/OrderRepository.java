@@ -1,6 +1,7 @@
 package com.company.aivehicleorder.repository;
 
 import com.company.aivehicleorder.entity.Order;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     List<Order> findByDeletedFalse();
 
     List<Order> findByDeletedFalseAndStatusContainingAndCustomerNameContaining(
-            String status, String customerName);
+            String status, String customerName, Sort sort);
 
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }

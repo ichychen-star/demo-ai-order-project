@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.data.domain.Sort;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -84,7 +86,7 @@ public class OrderService {
     public List<OrderResponse> listOrders(String keyword, String status) {
         String kw = keyword != null ? keyword : "";
         String st = status != null ? status : "";
-        return orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining(st, kw)
+        return orderRepository.findByDeletedFalseAndStatusContainingAndCustomerNameContaining(st, kw, Sort.by(Sort.Direction.DESC, "orderNo"))
                 .stream()
                 .map(OrderMapper::toResponse)
                 .toList();
