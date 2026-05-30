@@ -2,7 +2,7 @@
 
 AI-assisted B2B vehicle order management system for sales representatives.
 
-Sales reps paste customer text or upload a PDF → AI parses it into a structured order form → price is calculated → order is saved → AI generates a summary and customer confirmation email draft.
+Sales reps paste customer text or upload a PDF → AI parses it into a structured order form → price is calculated → order is saved → AI generates a summary.
 
 ---
 
@@ -10,10 +10,10 @@ Sales reps paste customer text or upload a PDF → AI parses it into a structure
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 16 + React 19.2 + TypeScript |
+| Frontend | Next.js 15 + React 19.1 + TypeScript |
 | UI | MUI v6 + Tailwind CSS 4 |
 | State | Zustand |
-| Backend | Java 25 + Spring Boot 4 |
+| Backend | Java 25 + Spring Boot 3.4.5 |
 | ORM | Spring Data JPA + Hibernate 7 |
 | Database | MySQL 8.0 (Azure Database for MySQL in production) |
 | Migration | Flyway |
@@ -116,7 +116,7 @@ Open [http://localhost:3000](http://localhost:3000).
 Before the first deploy, provision the Azure VM with the following:
 
 1. **OS**: Ubuntu 22.04 LTS (Standard B2s or larger)
-2. **Ports open**: 80 (HTTP) and 22 (SSH) in the Azure Network Security Group
+2. **Ports open**: 22 (SSH), 80 (HTTP), 443 (HTTPS) in the Azure Network Security Group
 3. **Docker**: Install Docker Engine and Docker Compose plugin
    ```bash
    curl -fsSL https://get.docker.com | sh
