@@ -54,7 +54,7 @@ Audience: `AI Coding Agent / Solution Architect / Engineering Team`
 
 ## 1.1 Frontend
 
-- **Framework:** Next.js 16 App Router (React 19.2)
+- **Framework:** Next.js 15 App Router (React 19.1)
 - **Role:** SPA with SSR capability; renders order list, create/edit form, AI panel
 - **Communication:** REST over HTTP to Spring Boot backend via `/api/*`
 - **State:** React state + Zustand store for order form; no global auth state (MVP)
@@ -62,7 +62,7 @@ Audience: `AI Coding Agent / Solution Architect / Engineering Team`
 
 ## 1.2 Backend
 
-- **Framework:** Spring Boot 4 (Java 25)
+- **Framework:** Spring Boot 3.4.5 (Java 25)
 - **Role:** Business logic, pricing engine, AI orchestration, data persistence
 - **Exposes:** RESTful JSON API documented with OpenAPI 3
 - **PDF handling:** Apache PDFBox extracts text server-side before AI call
@@ -80,7 +80,7 @@ Audience: `AI Coding Agent / Solution Architect / Engineering Team`
 
 - **Provider:** Azure OpenAI (private endpoint within Azure VNet preferred)
 - **Model:** `gpt-4o` or `gpt-4.1` deployed under your Azure subscription
-- **Use cases:** parse-text, parse-pdf, generate-summary, generate-email
+- **Use cases:** parse-text, parse-pdf, generate-summary
 - **Boundary:** AI never calculates price, never validates option existence — that is backend responsibility (see SPEC §19)
 
 ---
@@ -91,19 +91,19 @@ Audience: `AI Coding Agent / Solution Architect / Engineering Team`
 
 | Concern | Choice | Reason |
 |---|---|---|
-| Framework | Next.js 16 App Router | SSR-capable, file-based routing, React 19 concurrent features |
+| Framework | Next.js 15 App Router | SSR-capable, file-based routing, React 19 concurrent features |
 | UI Library | MUI v6 + Tailwind CSS 4 | MUI for form components, Tailwind for layout utility classes |
 | State Management | Zustand | Minimal boilerplate; order form state is local, not global auth |
 | HTTP Client | Axios | Interceptors for error handling and base URL config |
 | Package Manager | pnpm | Faster than npm/yarn, disk-efficient monorepo support |
 | Form Validation | react-hook-form + zod | Type-safe schema validation; aligns with backend DTO contracts |
-| PDF Preview | pdfjs-dist | Client-side PDF preview before upload |
+| PDF Upload | File input (native) | PDF sent to backend for server-side text extraction via PDFBox |
 
 ## 2.2 Backend
 
 | Concern | Choice | Reason |
 |---|---|---|
-| Framework | Spring Boot 4 (Java 25) | As specified; virtual threads via Project Loom for async AI calls |
+| Framework | Spring Boot 3.4.5 (Java 25) | As specified; virtual threads via Project Loom for async AI calls |
 | Build | Maven | As specified |
 | ORM | Spring Data JPA (Hibernate 7) | Reduces boilerplate; UUID PK support out of box |
 | Migration | Flyway | Versioned, auditable schema evolution |
@@ -248,8 +248,7 @@ ai-vehicle-order/                   ← repo root
 │   │   │       ├── application-prod.yml
 │   │   │       ├── prompts/        ← Prompt templates (plain text files)
 │   │   │       │   ├── parse-order-system.txt
-│   │   │       │   ├── generate-summary-system.txt
-│   │   │       │   └── generate-email-system.txt
+│   │   │       │   └── generate-summary-system.txt
 │   │   │       └── db/migration/   ← Flyway scripts
 │   │   │           ├── V1__create_vehicles.sql
 │   │   │           ├── V2__create_vehicle_options.sql
@@ -352,8 +351,7 @@ Isolated in `ai/` package. Rest of codebase calls `AiOrchestrationService` only 
 AiOrchestrationService
     ├── parseOrderFromText(String text) → AiParseResponse
     ├── parseOrderFromPdf(String extractedText) → AiParseResponse
-    ├── generateSummary(OrderResponse order) → String
-    └── generateEmail(OrderResponse order) → String
+    └── generateSummary(OrderResponse order) → String
 ```
 
 - **Prompt loading:** `PromptTemplateLoader` reads `.txt` files from `resources/prompts/` at startup
@@ -373,7 +371,6 @@ Prompts are stored as plain text files in `backend/src/main/resources/prompts/`,
 |---|---|---|
 | `parse-order-system.txt` | Extract structured order fields from free text | ~300 system tokens |
 | `generate-summary-system.txt` | Generate order summary paragraph | ~200 system tokens |
-| `generate-email-system.txt` | Generate customer confirmation email | ~250 system tokens |
 
 **Prompt design principles** (from SPEC §18):
 - System prompt specifies: return JSON only, no price calculation, unknown field → null
@@ -409,7 +406,7 @@ This avoids Azure AI Search cost entirely for MVP. Revisit when catalog exceeds 
 **Not required for MVP.** Each AI call is stateless — a single request/response cycle. There is no multi-turn conversation.
 
 - `parse-text` / `parse-pdf` → single-shot extraction
-- `generate-summary` / `generate-email` → single-shot generation with order data injected
+- `generate-summary` → single-shot generation with order data injected
 
 > **Post-MVP:** If AI Chat Assistant is added (SPEC §34), use Azure Cosmos DB or Redis to store conversation turns per session.
 
@@ -439,7 +436,7 @@ This avoids Azure AI Search cost entirely for MVP. Revisit when catalog exceeds 
 |---|---|---|
 | Vehicle catalog (for prompt injection) | In-memory `@Cacheable` bean (`ConcurrentMapCache`) | App lifetime — refreshed on restart |
 | AI parse result | No cache — each parse is unique user input | N/A |
-| AI summary / email | Stored in `orders.ai_summary` / `orders.ai_email` columns; only regenerated on explicit user action | Persistent in DB |
+| AI summary | Stored in `orders.ai_summary` column; only regenerated on explicit user action | Persistent in DB |
 
 Storing AI output in the `orders` table means re-opening an order shows the same AI content without a new API call.
 
@@ -468,7 +465,7 @@ vehicle_options ─────────────────────�
                                        │     options_total_price (snapshot)
                                        │     total_price (snapshot)
                                        │     status, source_type
-                                       │     ai_summary, ai_email
+                                       │     ai_summary
                                        │     deleted, created_at, updated_at
                                        │
                                        └──────── order_options
@@ -666,7 +663,7 @@ Use separate Azure OpenAI quota limits per environment to prevent staging from c
 | Risk | Mitigation |
 |---|---|
 | **Unbounded input text** | Hard cap: truncate `sourceText` at 2,000 chars; truncate PDF text at 3,000 chars before API call |
-| **Repeated AI calls on same order** | Store AI output in `orders.ai_summary` / `orders.ai_email`; frontend disables re-generate button if field already populated |
+| **Repeated AI calls on same order** | Store AI output in `orders.ai_summary`; frontend disables re-generate button if field already populated |
 | **Expensive model for simple tasks** | Use `gpt-4o-mini` for parse (extraction); use `gpt-4o` only for summary/email (quality-sensitive) |
 | **No token usage visibility** | Log `promptTokens + completionTokens` per request to Application Insights; set Azure OpenAI quota limit per deployment |
 | **Prompt bloat over time** | Prompts are versioned files — review and trim on each sprint; few-shot examples max 3 |
