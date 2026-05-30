@@ -32,9 +32,19 @@ Extract vehicle order information from the customer message and return a JSON ob
 ## Available Vehicles (name must match exactly)
 - Mercedes-Benz GLC 300 Coupe
 - Mercedes-Benz GLC 200
+- Mercedes-Benz E 300
+- Mercedes-Benz GLE 450
 - BMW X3
 - BMW X4
+- BMW 3 Series 330i
+- BMW X5 xDrive40i
+- BMW 5 Series 530i
 - Audi Q5
+- Audi Q3
+- Audi A4
+- Volvo XC60
+- Volvo XC40
+- Lexus RX 350
 
 ## Available Options (name must match exactly)
 - AMG Line
