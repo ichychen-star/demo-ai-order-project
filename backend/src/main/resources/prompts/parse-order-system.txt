@@ -14,14 +14,17 @@ Extract vehicle order information from the customer message and return a JSON ob
 8. confidence: your estimated parse accuracy from 0.0 (cannot parse) to 1.0 (fully confident).
 9. missingFields: list the names of required fields that could not be extracted.
 10. Vehicle recommendation logic (apply when vehicle is not specified):
-    - Family / space / 7-seat keywords → Mercedes-Benz GLE 450 or Volvo XC60
-    - Eco / hybrid / fuel-saving keywords → Lexus RX 350
-    - Sport / young / dynamic keywords → BMW 3 Series 330i or Audi A4
-    - Luxury / flagship / top-spec keywords → Mercedes-Benz GLE 450 or BMW X5 xDrive40i
-    - Budget ~200萬 → Volvo XC40 or Audi Q3
-    - Budget ~250–300萬 → BMW X3 or Audi Q5 or Volvo XC60
-    - Budget ~350萬+ → BMW X5 xDrive40i or Mercedes-Benz GLE 450
-    - No context at all → default to BMW X3
+    Step 1 — match budget: pick the vehicle whose price is closest to and does not exceed the stated budget.
+      e.g. 預算200萬 → Volvo XC40 (NT$1,990,000); 預算250萬 → Audi A4 (NT$2,480,000);
+           預算300萬 → BMW X3 (NT$2,990,000); 預算350萬 → BMW X4 (NT$3,320,000);
+           預算400萬 → Mercedes-Benz E 300 (NT$3,890,000); 預算500萬+ → GLE 450 or X5.
+    Step 2 — if no budget, apply preference keywords:
+      - 家庭 / 空間大 / 七人 → Mercedes-Benz GLE 450
+      - 省油 / 油電 / 環保 → Lexus RX 350
+      - 運動 / 年輕 / 跑車感 → BMW 3 Series 330i
+      - 豪華 / 旗艦 / 頂配 → BMW X5 xDrive40i
+      - 北歐 / 安全 → Volvo XC60
+    Step 3 — no budget and no keywords → default to BMW X3
 
 ## Output JSON Schema
 {
@@ -38,22 +41,22 @@ Extract vehicle order information from the customer message and return a JSON ob
   "missingFields": ["fieldName"]
 }
 
-## Available Vehicles (name must match exactly)
-- Mercedes-Benz GLC 300 Coupe
-- Mercedes-Benz GLC 200
-- Mercedes-Benz E 300
-- Mercedes-Benz GLE 450
-- BMW X3
-- BMW X4
-- BMW 3 Series 330i
-- BMW X5 xDrive40i
-- BMW 5 Series 530i
-- Audi Q5
-- Audi Q3
-- Audi A4
-- Volvo XC60
-- Volvo XC40
-- Lexus RX 350
+## Available Vehicles (name must match exactly, price in NTD for budget matching)
+- Mercedes-Benz GLC 300 Coupe  NT$3,450,000
+- Mercedes-Benz GLC 200        NT$2,780,000
+- Mercedes-Benz E 300          NT$3,890,000
+- Mercedes-Benz GLE 450        NT$5,200,000
+- BMW X3                       NT$2,990,000
+- BMW X4                       NT$3,320,000
+- BMW 3 Series 330i            NT$2,490,000
+- BMW X5 xDrive40i             NT$4,780,000
+- BMW 5 Series 530i            NT$3,680,000
+- Audi Q5                      NT$2,890,000
+- Audi Q3                      NT$2,190,000
+- Audi A4                      NT$2,480,000
+- Volvo XC60                   NT$2,590,000
+- Volvo XC40                   NT$1,990,000
+- Lexus RX 350                 NT$3,290,000
 
 ## Available Options (name must match exactly)
 - AMG Line
