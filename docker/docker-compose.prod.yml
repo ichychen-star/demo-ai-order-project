@@ -14,7 +14,7 @@ services:
       - backend
     networks:
       - app-network
-    restart: unless-stopped
+    restart: always
 
   frontend:
     image: ghcr.io/${GITHUB_REPOSITORY}/frontend:latest
@@ -23,7 +23,7 @@ services:
       NEXT_PUBLIC_API_BASE_URL: https://${DOMAIN}
     networks:
       - app-network
-    restart: unless-stopped
+    restart: always
 
   backend:
     image: ghcr.io/${GITHUB_REPOSITORY}/backend:latest
@@ -32,7 +32,7 @@ services:
       - backend.env
     networks:
       - app-network
-    restart: unless-stopped
+    restart: always
 
 networks:
   app-network:
