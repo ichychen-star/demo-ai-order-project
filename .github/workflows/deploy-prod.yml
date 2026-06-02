@@ -39,6 +39,16 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
             NEXT_STANDALONE=true
 
+      - name: Copy compose file to Azure VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: deploy
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          source: "docker/docker-compose.prod.yml"
+          target: "/opt/aivehicleorder/"
+          strip_components: 1
+
       - name: Deploy to Azure VM
         uses: appleboy/ssh-action@v1
         with:
