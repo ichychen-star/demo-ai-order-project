@@ -39,16 +39,6 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
             NEXT_STANDALONE=true
 
-      - name: Copy compose file to Azure VM
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.AZURE_VM_HOST }}
-          username: deploy
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          source: "docker/docker-compose.prod.yml"
-          target: "/opt/aivehicleorder/"
-          strip_components: 1
-
       - name: Deploy to Azure VM
         uses: appleboy/ssh-action@v1
         with:
@@ -59,6 +49,10 @@ jobs:
             export GITHUB_REPOSITORY="${{ github.repository }}"
             export DOMAIN="${{ secrets.DOMAIN }}"
             cd /opt/aivehicleorder
+            curl -fsSL \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://raw.githubusercontent.com/${{ github.repository }}/main/docker/docker-compose.prod.yml" \
+              -o docker-compose.prod.yml
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d --no-build
             docker image prune -f
