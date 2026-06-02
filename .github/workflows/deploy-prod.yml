@@ -53,6 +53,11 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
               "https://raw.githubusercontent.com/${{ github.repository }}/main/docker/docker-compose.prod.yml" \
               -o docker-compose.prod.yml
+            mkdir -p nginx
+            curl -fsSL \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              "https://raw.githubusercontent.com/${{ github.repository }}/main/docker/nginx/nginx.conf" \
+              -o nginx/nginx.conf
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d --no-build
             docker image prune -f
